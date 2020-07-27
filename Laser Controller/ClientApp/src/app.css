@@ -1,0 +1,23 @@
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+#main {
+  height: 100vh;
+  margin-left: 205px;
+  margin-right: 5px;
+  background-color: rgb(250, 250, 250);
+  overflow-x: hidden;
+}
+
+#main form {
+  width: 95%;
+  margin: auto;
+  margin-top: 2vh;
+}
+
+#main form > div {
+  margin-bottom: 25px;
+}

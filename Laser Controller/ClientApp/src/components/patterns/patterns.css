@@ -1,0 +1,26 @@
+#patterns-preview {
+    margin-bottom: 25px;
+}
+
+.patterns-form-group {
+    margin: 2px;
+}
+
+.patterns-form-group-size-small {
+    width: 60px;
+}
+
+
+.patterns-form-group-size-large {
+    min-width: 135px;
+}
+
+.patterns-form-row {
+    width: 100%;
+    margin: auto;
+}
+
+#patterns-dotdrawers {
+    height: 250px;
+    overflow-y: scroll;
+}

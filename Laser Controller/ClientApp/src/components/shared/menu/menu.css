@@ -1,0 +1,36 @@
+#menu {
+    height: 100%;
+    width: 200px;
+    background-color: black;
+    position: absolute;
+
+    color: white;
+    font-size: 125%;
+    padding: 5px;
+    text-align: center;
+}
+
+#menu label {
+    color: #2d7ecf;
+}
+
+#menu-links {
+    width: 100%;
+    max-width: 200px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 25px;
+    text-align: left;
+}
+
+#menu a {
+    display: block;
+    padding: 10px 30px 10px 30px;
+    color: white;
+    text-decoration: none;
+}
+
+#menu a:hover {
+    background-color: rgb(43, 43, 43);
+    color: whitesmoke;
+}
