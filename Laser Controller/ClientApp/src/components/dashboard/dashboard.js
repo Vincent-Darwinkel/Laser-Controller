@@ -5,23 +5,13 @@ import DashboardCard from './elements/card/dashboard-card';
 
 class Dashboard extends Component {
 
-    getData = () => {
-
-    }
-
     render() {
         return (
             <div>
                 <Menu />
                 <div id="main">
-                    <div class="row dashboard-card-row">
-                        <DashboardCard title="Recently added shows" description="All added shows of the last 3 months" buttonText="Run" />
-                        <DashboardCard title="Recently added patterns" description="All added patterns of the last 3 months" buttonText="Run" />
-                    </div>
-
-                    <div class="row dashboard-card-row">
-                        <DashboardCard title="Recently executed shows" description="All executed shows of the last 3 months" buttonText="Run" />
-                        <DashboardCard title="Recently executed patterns" description="All executed patterns of the last 3 months" buttonText="Run" />
+                    <div className="row dashboard-card-row">
+                        <DashboardCard title={"Audio " + <i class="fas fa-volume-up"></i>} description="Let an audio algorithm create patterns based on an audio signal" href="/audio" />
                     </div>
                 </div>
             </div>

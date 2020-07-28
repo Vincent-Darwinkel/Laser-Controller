@@ -5,8 +5,8 @@
     /// </summary>
     public enum AnimationSpeed
     {
-        Slow = 3000,
-        Medium = 2000,
+        Slow = 2000,
+        Medium = 1500,
         Fast = 1000,
         VeryFast = 500
     }
