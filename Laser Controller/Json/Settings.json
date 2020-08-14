@@ -1,1 +1,10 @@
-{"MaxPower":33,"RedPower":100,"GreenPower":100,"BluePower":100,"MaxHeight":200,"MinHeight":-2000,"MaxLeft":-2000,"MaxRight":2000,"ComPort":null}
+{
+  "RedPower": 125,
+  "GreenPower": 90,
+  "BluePower": 90,
+  "MaxHeight": 2000,
+  "MinHeight": -2000,
+  "MaxLeft": -2000,
+  "MaxRight": 2000,
+  "ComPort": "COM4"
+}

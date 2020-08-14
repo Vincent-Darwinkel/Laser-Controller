@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
-using Models;
 
-namespace Logic
+namespace Models
 {
-    public class SerialPortLogic
+    public class SerialPortModel
     {
         private readonly SerialPort _serialPort = new SerialPort();
 
-        public SerialPortLogic(Settings settings)
+        public SerialPortModel(Settings settings)
         {
+            if (settings.ComPort == null) return;
             _serialPort.PortName = settings.ComPort;
-            _serialPort.BaudRate = 800000;
+            _serialPort.BaudRate = 1800000;
         }
 
         public List<string> GetPortNames()
@@ -25,6 +25,7 @@ namespace Logic
         {
             try
             {
+                if (_serialPort.IsOpen) return;
                 _serialPort.Open();
                 _serialPort.WriteLine(command);
             }
@@ -36,7 +37,14 @@ namespace Logic
 
             finally
             {
-                _serialPort.Close();
+                try
+                {
+                    _serialPort.Close();
+                }
+                catch (Exception e)
+                {
+                    
+                }
             }
         }
     }

@@ -75,19 +75,24 @@ namespace Logic
             return peaks >= 5 && volume >= 850 ? AnimationSpeed.VeryFast : AnimationSpeed.Slow;
         }
 
+        bool AnimationComplete(Task task)
+        {
+            return task.Status == TaskStatus.Created || task.Status == TaskStatus.RanToCompletion;
+        } 
+
         public void StartAudioAlgorithm(string deviceName)
         {
             _algorithmCanceled = false;
             MMDevice device = GetDeviceByName(deviceName);
 
             var volumeCheckStopwatch = new Stopwatch();
-            var animationTimeStopwatch = new Stopwatch();
 
             AnimationSpeed animationSpeed = AnimationSpeed.Slow;
             int peaks = 0;
 
+            Task animationTask = new Task(() => DrawPattern(animationSpeed));
+
             double lastVolume = 0;
-            long taskDuration = 0;
             volumeCheckStopwatch.Start();
 
             while (!_algorithmCanceled)
@@ -101,28 +106,19 @@ namespace Logic
                 {
                     animationSpeed = GetSpeedByPeaksAndVolume(peaks, volume);
                     peaks = 0;
-
+                    
                     _animationSpeedHistory.Add(animationSpeed);
-
-                    Console.WriteLine(animationSpeed);
 
                     volumeCheckStopwatch.Reset();
                     volumeCheckStopwatch.Start();
                 }
 
-                if (animationTimeStopwatch.ElapsedMilliseconds >= taskDuration && volume > 200)
+                if (volume > 200 && AnimationComplete(animationTask))
                 {
-                    animationTimeStopwatch.Stop();
-                    animationTimeStopwatch.Reset();
+                    if (animationTask.Status == TaskStatus.RanToCompletion)
+                        animationTask = new Task(() => DrawPattern(animationSpeed));
 
-                    animationTimeStopwatch.Start();
-                    taskDuration = (int)animationSpeed;
-
-                    Task.Run(() =>
-                    {
-                        while (animationTimeStopwatch.ElapsedMilliseconds < (int)animationSpeed)
-                            DrawPattern(animationSpeed);
-                    });
+                    else animationTask.Start();
                 }
                 
                 lastVolume = volume;

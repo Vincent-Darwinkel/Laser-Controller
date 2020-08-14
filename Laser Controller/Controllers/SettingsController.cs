@@ -11,18 +11,18 @@ namespace Laser_Controller.Controllers
     public class SettingsController : ControllerBase
     {
         private readonly JsonHandler _jsonHandler;
-        private readonly SerialPortLogic _serialPortLogic;
+        private readonly SerialPortModel _serialPortModel;
 
-        public SettingsController(JsonHandler jsonHandler, SerialPortLogic serialPortLogic)
+        public SettingsController(JsonHandler jsonHandler, SerialPortModel serialPortModel)
         {
             _jsonHandler = jsonHandler;
-            _serialPortLogic = serialPortLogic;
+            _serialPortModel = serialPortModel;
         }
 
         [HttpGet("getcomports")]
         public List<string> GetComPorts()
         {
-            return _serialPortLogic.GetPortNames();
+            return _serialPortModel.GetPortNames();
         }
 
         [HttpPost("savesettings")]

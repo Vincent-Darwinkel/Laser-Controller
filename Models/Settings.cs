@@ -2,7 +2,6 @@
 {
     public class Settings
     {
-        public int MaxPower { get; set; }
         public int RedPower { get; set; }
         public int GreenPower { get; set; }
         public int BluePower { get; set; }
