@@ -13,7 +13,7 @@ namespace Models
         {
             if (settings.ComPort == null) return;
             _serialPort.PortName = settings.ComPort;
-            _serialPort.BaudRate = 1800000;
+            _serialPort.BaudRate = 60000000;
         }
 
         public List<string> GetPortNames()

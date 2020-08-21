@@ -1,4 +1,5 @@
-﻿using Interfaces;
+﻿using System.Threading.Tasks;
+using Interfaces;
 
 namespace Models.LaserPatternModels
 {
@@ -16,7 +17,7 @@ namespace Models.LaserPatternModels
             _laserPatternsHelper = laserPatternsHelper;
         }
 
-        public void Project(AnimationSpeed animationSpeed)
+        public async Task Project(AnimationSpeed animationSpeed)
         {
             LaserColors laserColors = _laserPatternsHelper.GetRandomLaserColor();
 

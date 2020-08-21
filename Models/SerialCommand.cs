@@ -9,7 +9,7 @@
 
         public string Galvo(int x, int y)
         {
-            return $"(galvo,{x}:{y})";
+            return $"(g,{x}:{y})";
         }
     }
 }

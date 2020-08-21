@@ -65,6 +65,7 @@ namespace Logic
             else if (avarageAnimationSpeed == AnimationSpeed.Medium) volume -= 50;
             else if (avarageAnimationSpeed == AnimationSpeed.Fast) volume -= 200;
             else if (avarageAnimationSpeed == AnimationSpeed.VeryFast) volume -= 300;
+            Console.WriteLine(avarageAnimationSpeed);
 
             if (peaks > 0 && peaks < 3 && volume >= 300)
                 return AnimationSpeed.Medium;

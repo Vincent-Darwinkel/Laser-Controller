@@ -1,4 +1,6 @@
-﻿namespace Interfaces
+﻿using System.Threading.Tasks;
+
+namespace Interfaces
 {
     /// <summary>
     /// Used to set animation speed of a pattern, value can be used for a stopwatch
@@ -13,7 +15,7 @@
 
     public interface ILaserPattern
     {
-        void Project(AnimationSpeed animationSpeed);
+        Task Project(AnimationSpeed animationSpeed);
         public AnimationSpeed GetAnimationSpeed();
     }
 }

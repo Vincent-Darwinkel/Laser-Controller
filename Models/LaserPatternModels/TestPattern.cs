@@ -1,17 +1,17 @@
-﻿using System;
+﻿using System.Diagnostics;
 using System.Threading.Tasks;
 using Interfaces;
 
 namespace Models.LaserPatternModels
 {
-    public class RandomDots : ILaserPattern
+    public class TestPattern : ILaserPattern
     {
         private readonly Settings _settings;
-        private readonly AnimationSpeed _animationSpeed = AnimationSpeed.Fast;
+        private readonly AnimationSpeed _animationSpeed = AnimationSpeed.Slow;
         private readonly SerialPortModel _serialPortModel;
         private readonly LaserPatternsHelper _laserPatternsHelper;
 
-        public RandomDots(Settings settings, SerialPortModel serialPortModel, LaserPatternsHelper laserPatternsHelper)
+        public TestPattern(Settings settings, SerialPortModel serialPortModel, LaserPatternsHelper laserPatternsHelper)
         {
             _settings = settings;
             _serialPortModel = serialPortModel;
@@ -20,15 +20,16 @@ namespace Models.LaserPatternModels
 
         public async Task Project(AnimationSpeed animationSpeed)
         {
-            for (int i = 0; i < (int)animationSpeed; i += 25)
+            LaserColors laserColors = _laserPatternsHelper.GetRandomLaserColor();
+
+            int height = _settings.MaxHeight;
+
+            for (int i = 0; i < 10000; i++)
             {
-                int x = new Random(Guid.NewGuid().GetHashCode()).Next(_settings.MaxLeft, _settings.MaxRight);
-                int y = new Random(Guid.NewGuid().GetHashCode()).Next(_settings.MinHeight, _settings.MaxHeight);
-
-                LaserColors laserColors = _laserPatternsHelper.GetRandomLaserColor();
-
-                _serialPortModel.SendCommand(new SerialCommand().Galvo(x, y));
+                _serialPortModel.SendCommand(new SerialCommand().Galvo(_settings.MaxLeft, height));
                 _serialPortModel.SendCommand(new SerialCommand().Lasers(laserColors.Red, laserColors.Green, laserColors.Blue));
+                _serialPortModel.SendCommand(new SerialCommand().Galvo(_settings.MaxRight, height));
+                if (height - 15 > _settings.MinHeight) height -= 15;
             }
         }
 

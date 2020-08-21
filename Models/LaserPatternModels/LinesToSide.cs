@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Interfaces;
 
 namespace Models.LaserPatternModels
@@ -17,7 +18,7 @@ namespace Models.LaserPatternModels
             _laserPatternsHelper = laserPatternsHelper;
         }
 
-        public void Project(AnimationSpeed animationSpeed)
+        public async Task Project(AnimationSpeed animationSpeed)
         {
             int y = new Random(Guid.NewGuid().GetHashCode()).Next(_settings.MinHeight, _settings.MaxHeight);
             int increaseValue = 0;

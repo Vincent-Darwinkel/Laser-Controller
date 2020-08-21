@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using Logic;
 using Microsoft.AspNetCore.Mvc;
-using NAudio.CoreAudioApi;
 
 namespace Laser_Controller.Controllers
 {
