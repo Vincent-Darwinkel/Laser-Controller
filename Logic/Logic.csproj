@@ -14,4 +14,10 @@
     <ProjectReference Include="..\Models\Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="Bass.Net">
+      <HintPath>Bass.Net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

@@ -1,6 +1,4 @@
-﻿using Interfaces;
-
-namespace Models
+﻿namespace Models
 {
     public class PatternControllerModel
     {

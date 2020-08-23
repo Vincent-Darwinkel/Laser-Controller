@@ -1,31 +1,65 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
+using System.Timers;
 using Interfaces;
-using Microsoft.Extensions.DependencyInjection;
+using Models;
 using NAudio.CoreAudioApi;
+using NAudio.Dsp;
+using NAudio.Wave;
 
 namespace Logic
 {
     public class AudioLogic
     {
-        public bool _algorithmCanceled { get; set; }
-        private readonly IServiceProvider _serviceProvider;
-        private List<ILaserPattern> _patternCollection = new List<ILaserPattern>();
-        private List<ILaserPattern> _executedPatternsHistory = new List<ILaserPattern>();
-        private List<AnimationSpeed> _animationSpeedHistory = new List<AnimationSpeed>();
-        
-        public AudioLogic(IServiceProvider serviceProvider)
+        private IWaveIn waveIn;
+        private static int fftLength = 8192;
+        private SampleAggregator sampleAggregator = new SampleAggregator(fftLength);
+
+        public bool _algorithmEnabled { get; set; }
+        private static Timer _timer;
+        public List<string> _audioDevices;
+        private List<Complex> _avarageValues = new List<Complex>();
+        private readonly SerialPortModel _serialPortModel;
+
+        public AudioLogic(SerialPortModel serialPortModel)
         {
-            _serviceProvider = serviceProvider;
+            SetTimer();
+            sampleAggregator.FftCalculated += FftCalculated;
+            sampleAggregator.PerformFFT = true;
+            _serialPortModel = serialPortModel;
+            waveIn = new WasapiLoopbackCapture();
 
-            var patterns = AppDomain.CurrentDomain.GetAssemblies().SelectMany(e => e.GetTypes())
-                .Where(x => typeof(ILaserPattern).IsAssignableFrom(x) && !x.IsInterface);
+            waveIn.DataAvailable += OnDataAvailable;
 
-            foreach (var pattern in patterns) 
-                _patternCollection.Add((ILaserPattern)ActivatorUtilities.CreateInstance(_serviceProvider, pattern));
+            waveIn.StartRecording();
+        }
+
+        void OnDataAvailable(object sender, WaveInEventArgs e)
+        {
+            byte[] buffer = e.Buffer;
+            int bytesRecorded = e.BytesRecorded;
+            int bufferIncrement = waveIn.WaveFormat.BlockAlign;
+
+            for (int index = 0; index < bytesRecorded; index += bufferIncrement)
+            {
+                float sample32 = BitConverter.ToSingle(buffer, index);
+                sampleAggregator.Add(sample32);
+            }
+        }
+
+        void FftCalculated(object sender, FftEventArgs e)
+        {
+            var highestValue = new Complex();
+            int index = 0;
+
+            foreach (var complex in e.Result)
+            {
+                if (highestValue.Y == 0 || complex.Y > highestValue.Y && index < 50 && index > 0) highestValue = complex;
+                index++;
+            }
+
+            _avarageValues.Add(highestValue);
         }
 
         public List<string> GetAudioDevices()
@@ -36,117 +70,58 @@ namespace Logic
             return devices.Select(mmDevice => mmDevice.FriendlyName).ToList();
         }
 
-        private MMDevice GetDeviceByName(string name)
+        private void SetTimer()
         {
-            var enumerator = new MMDeviceEnumerator();
-            var devices = enumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active).ToList();
-
-            return devices.Find(dev => dev.FriendlyName == name);
+            _timer = new Timer(600);
+            _timer.Elapsed += TimerTick;
+            _timer.AutoReset = true;
+            _timer.Enabled = true;
+            _timer.Start();
         }
 
-        private AnimationSpeed GetAverageAnimationSpeed()
+        private Complex GetAverageValue()
         {
-            if (_animationSpeedHistory.Count <= 0) return AnimationSpeed.Slow;
+            float totalY = 0;
+            float totalX = 0;
 
-            AnimationSpeed averageAnimationSpeed = _animationSpeedHistory.GroupBy(i => i).OrderByDescending(grp => grp.Count())
-                .Select(grp => grp.Key).First();
+            var avarageComplex = new Complex();
 
-            Console.WriteLine("AverageSpeed: " + averageAnimationSpeed);
-            Console.WriteLine("Total: " + _animationSpeedHistory.Count);
-            if (_animationSpeedHistory.Count >= 10) _animationSpeedHistory.Clear();
-            return averageAnimationSpeed;
-        }
-
-        private AnimationSpeed GetSpeedByPeaksAndVolume(int peaks, double volume)
-        {
-            AnimationSpeed avarageAnimationSpeed = GetAverageAnimationSpeed();
-
-            if (avarageAnimationSpeed == AnimationSpeed.Slow) volume -= 25;
-            else if (avarageAnimationSpeed == AnimationSpeed.Medium) volume -= 50;
-            else if (avarageAnimationSpeed == AnimationSpeed.Fast) volume -= 200;
-            else if (avarageAnimationSpeed == AnimationSpeed.VeryFast) volume -= 300;
-            Console.WriteLine(avarageAnimationSpeed);
-
-            if (peaks > 0 && peaks < 3 && volume >= 300)
-                return AnimationSpeed.Medium;
-
-            if (peaks >= 3 && peaks < 5 && volume >= 600)
-                return AnimationSpeed.Fast;
-
-            return peaks >= 5 && volume >= 850 ? AnimationSpeed.VeryFast : AnimationSpeed.Slow;
-        }
-
-        bool AnimationComplete(Task task)
-        {
-            return task.Status == TaskStatus.Created || task.Status == TaskStatus.RanToCompletion;
-        } 
-
-        public void StartAudioAlgorithm(string deviceName)
-        {
-            _algorithmCanceled = false;
-            MMDevice device = GetDeviceByName(deviceName);
-
-            var volumeCheckStopwatch = new Stopwatch();
-
-            AnimationSpeed animationSpeed = AnimationSpeed.Slow;
-            int peaks = 0;
-
-            Task animationTask = new Task(() => DrawPattern(animationSpeed));
-
-            double lastVolume = 0;
-            volumeCheckStopwatch.Start();
-
-            while (!_algorithmCanceled)
+            foreach (var value in _avarageValues)
             {
-                double volume = Math.Round(device.AudioMeterInformation.MasterPeakValue * 2000);
-
-                if (volume > lastVolume)
-                    peaks++;
-                
-                if (volumeCheckStopwatch.ElapsedMilliseconds >= 350)
-                {
-                    animationSpeed = GetSpeedByPeaksAndVolume(peaks, volume);
-                    peaks = 0;
-                    
-                    _animationSpeedHistory.Add(animationSpeed);
-
-                    volumeCheckStopwatch.Reset();
-                    volumeCheckStopwatch.Start();
-                }
-
-                if (volume > 200 && AnimationComplete(animationTask))
-                {
-                    if (animationTask.Status == TaskStatus.RanToCompletion)
-                        animationTask = new Task(() => DrawPattern(animationSpeed));
-
-                    else animationTask.Start();
-                }
-                
-                lastVolume = volume;
+                totalX += value.X;
+                totalY += value.Y;
             }
+
+            avarageComplex.Y = totalY / _avarageValues.Count;
+            avarageComplex.X = totalX / _avarageValues.Count;
+
+            _avarageValues.Clear();
+
+            return avarageComplex;
         }
 
-        /// <summary>
-        /// Selects a pattern based on a random value and will only select a pattern if it was not executed three patterns ago
-        /// </summary>
-        /// <param name="animationSpeed"></param>
-        /// <returns></returns>
-        private ILaserPattern SelectRandomPattern(AnimationSpeed animationSpeed)
-        {
-            var patternsThatMatchSpeed = _patternCollection.FindAll(pattern => pattern.GetAnimationSpeed() == animationSpeed);
-            if (_executedPatternsHistory.Count >= 6) _executedPatternsHistory.RemoveRange(0, 3);
 
-            var patternsThatCanBeExecuted = patternsThatMatchSpeed.Except(_executedPatternsHistory).ToList();
-            int randomIndex = new Random(DateTime.Now.Millisecond).Next(0, patternsThatCanBeExecuted.Count);
-            
-            if (patternsThatCanBeExecuted.Count != 0) return patternsThatCanBeExecuted[randomIndex];
-            return _patternCollection[0];
+        private void TimerTick(Object source, ElapsedEventArgs e)
+        {
+            Complex average = GetAverageValue();
+
+            if (average.Y != average.Y || average.X != average.X || average.Y < 0.005)
+            {
+                _serialPortModel.SendCommand(new SerialCommand().SetAnimationSpeed(AnimationSpeed.Off));
+                return;
+            }
+
+            var animationSpeed = AnimationSpeed.Slow;
+            if (average.Y > 0.014 && average.Y < 0.020) animationSpeed = AnimationSpeed.Medium;
+            else if (average.Y > 0.020 && average.Y < 0.026) animationSpeed = AnimationSpeed.Fast;
+            else if (average.Y > 0.026) animationSpeed = AnimationSpeed.VeryFast;
+
+            _serialPortModel.SendCommand(new SerialCommand().SetAnimationSpeed(animationSpeed));
         }
 
-        private void DrawPattern(AnimationSpeed animationSpeed)
+        public void StartAudioAlgorithm(string device)
         {
-            ILaserPattern pattern = SelectRandomPattern(animationSpeed);
-            pattern.Project(animationSpeed);
+
         }
     }
 }

@@ -1,15 +1,28 @@
-﻿namespace Models
+﻿using System;
+using Interfaces;
+
+namespace Models
 {
     public class SerialCommand
     {
-        public string Lasers(int red, int green, int blue)
+        public string SaveSettings(Settings settings)
         {
-            return $"(rgb,{red}:{green}|{blue})";
+            LaserSettings laserSettings = new LaserSettings
+            {
+                maxLeft = settings.MaxLeft,
+                maxRight = settings.MaxRight,
+                maxHeight = settings.MaxHeight,
+                minHeight = settings.MinHeight,
+                maxLaserPower = new[] {settings.RedPower, settings.GreenPower, settings.BluePower}
+            };
+
+            return Newtonsoft.Json.JsonConvert.SerializeObject(laserSettings);
         }
 
-        public string Galvo(int x, int y)
+        public string SetAnimationSpeed(AnimationSpeed animationSpeed)
         {
-            return $"(g,{x}:{y})";
+            Console.WriteLine((int)animationSpeed);
+            return $"(set-animationspeed,{(int)animationSpeed})";
         }
     }
 }

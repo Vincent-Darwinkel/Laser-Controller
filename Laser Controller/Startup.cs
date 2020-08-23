@@ -37,7 +37,6 @@ namespace Laser_Controller
         {
             services.AddTransient<JsonHandler>();
             services.AddSingleton<AudioLogic>();
-            services.AddSingleton<PatternLogic>();
             services.AddSingleton<SerialPortModel>();
             services.AddTransient<LaserPatternsHelper>();
             services.AddSingleton(service => new JsonHandler().Get<Settings>("Settings.json"));

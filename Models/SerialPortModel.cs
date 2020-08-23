@@ -13,7 +13,7 @@ namespace Models
         {
             if (settings.ComPort == null) return;
             _serialPort.PortName = settings.ComPort;
-            _serialPort.BaudRate = 60000000;
+            _serialPort.BaudRate = 600000;
         }
 
         public List<string> GetPortNames()
@@ -26,6 +26,8 @@ namespace Models
             try
             {
                 if (_serialPort.IsOpen) return;
+                var rnd = new Random(Guid.NewGuid().GetHashCode());
+
                 _serialPort.Open();
                 _serialPort.WriteLine(command);
             }

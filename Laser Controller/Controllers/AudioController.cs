@@ -25,7 +25,7 @@ namespace Laser_Controller.Controllers
         [HttpPost("stop")]
         public void StopAudio()
         {
-            _audioLogic._algorithmCanceled = true;
+            _audioLogic._algorithmEnabled = true;
         }
 
         [HttpGet("devices")]
