@@ -15,7 +15,11 @@
         })
 
     if (response.ok)
-        return await response.json();
+        try {
+            return await response.json();
+        } catch (error) {
+            return { response: "Er is iets fout gegaan" };
+        }
 
     return { response: "Er is iets fout gegaan" };
 }
@@ -38,7 +42,11 @@ export const Post = async (action, jwt, json) => {
         })
 
     if (response.ok)
-        return await response.json();
+        try {
+            return await response.json();
+        } catch (error) {
+            return { response: "Er is iets fout gegaan" };
+        }
 
     return { response: "Er is iets fout gegaan" };
 }
@@ -61,7 +69,11 @@ export const Put = async (action, jwt, json) => {
         })
 
     if (response.ok)
-        return await response.json();
+        try {
+            return await response.json();
+        } catch (error) {
+            return { response: "Er is iets fout gegaan" };
+        }
 
     return { response: "Er is iets fout gegaan" };
 }
@@ -84,7 +96,11 @@ export const Delete = async function (action, jwt, json) {
         })
 
     if (response.ok)
-        return await response.json();
+        try {
+            return await response.json();
+        } catch (error) {
+            return { response: "Er is iets fout gegaan" };
+        }
 
     return { response: "Er is iets fout gegaan" };
 }

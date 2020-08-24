@@ -1,12 +1,16 @@
 import { Post, Get } from '../shared/api/Api';
 import { RunAudio, CancelAudio, AudioDevices } from '../shared/api/ApiActions';
 
-export const StartAudio = async (device) => {
-    return await Post(RunAudio, null, device);
+export const StartAudio = async () => {
+    try {
+        Post(RunAudio, null, null);
+    } catch (error) { }
 }
 
 export const StopAudio = async () => {
-    return await Post(CancelAudio, null, null);
+    try {
+        Post(CancelAudio, null, null);
+    } catch (error) { }
 }
 
 export const GetAudioDevices = async () => {

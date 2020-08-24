@@ -1,0 +1,11 @@
+#audio-control {
+    margin: auto;
+    margin-top: 5vh;
+    text-align: center;
+    width: 30%;
+    padding: 10px;
+}
+
+#audio-control button {
+    margin: 2px;
+}

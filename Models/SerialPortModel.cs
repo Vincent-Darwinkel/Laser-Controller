@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO.Ports;
-using System.Linq;
+using Newtonsoft.Json;
 
 namespace Models
 {
@@ -9,16 +9,57 @@ namespace Models
     {
         private readonly SerialPort _serialPort = new SerialPort();
 
-        public SerialPortModel(Settings settings)
+        public SerialPortModel(LaserSettings settings)
         {
-            if (settings.ComPort == null) return;
+            if (string.IsNullOrEmpty(settings.ComPort)) settings.ComPort = "COM4";
             _serialPort.PortName = settings.ComPort;
             _serialPort.BaudRate = 600000;
         }
 
-        public List<string> GetPortNames()
+        public IEnumerable<string> GetPortNames()
         {
-            return SerialPort.GetPortNames().ToList();
+            return SerialPort.GetPortNames();
+        }
+
+        public T SendReadAndConvert<T>(string command)
+        {
+            try
+            {
+                if (_serialPort.IsOpen) return default;
+                _serialPort.Open();
+
+                string json = "";
+
+                // sometimes the laser doesn't respond fast enough so we try it more times
+                int tries = 0;
+                while (string.IsNullOrEmpty(json) && tries < 10)
+                {
+                    _serialPort.WriteLine(command);
+                    json = _serialPort.ReadExisting();
+                    tries++;
+                }
+
+                return json.Contains("error") ? default : JsonConvert.DeserializeObject<T>(json);
+            }
+
+            catch (Exception e)
+            {
+                // catch locked exception
+            }
+
+            finally
+            {
+                try
+                {
+                    _serialPort.Close();
+                }
+                catch (Exception e)
+                {
+
+                }
+            }
+
+            return default;
         }
 
         public void SendCommand(string command)
@@ -26,7 +67,6 @@ namespace Models
             try
             {
                 if (_serialPort.IsOpen) return;
-                var rnd = new Random(Guid.NewGuid().GetHashCode());
 
                 _serialPort.Open();
                 _serialPort.WriteLine(command);

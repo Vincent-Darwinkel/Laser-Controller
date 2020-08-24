@@ -34,3 +34,11 @@
     background-color: rgb(43, 43, 43);
     color: whitesmoke;
 }
+
+#menu-btn-emergency {
+    margin-top: 10px;
+    background-color: #eb4034;
+    color: white;
+    border-radius: 5px;
+    outline:0;
+}

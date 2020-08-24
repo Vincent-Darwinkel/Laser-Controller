@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Logic;
 using Microsoft.AspNetCore.Mvc;
@@ -20,21 +21,30 @@ namespace Laser_Controller.Controllers
         }
 
         [HttpGet("getcomports")]
-        public List<string> GetComPorts()
+        public IEnumerable<string> GetComPorts()
         {
             return _serialPortModel.GetPortNames();
         }
 
         [HttpPost("savesettings")]
-        public async Task<Result> SaveSettings([FromBody] Settings settings)
+        public async Task<Result> SaveSettings([FromBody] LaserSettings settings)
         {
-            return await _jsonHandler.Save(settings, "Settings.json");
+            _serialPortModel.SendCommand(new SerialCommand().SaveSettings(settings));
+            return await _jsonHandler.Save(settings, StoragePath.settings);
         }
 
         [HttpGet("getsettings")]
-        public Settings GetSettings()
+        public LaserSettings GetSettings()
         {
-            return _jsonHandler.Get<Settings>("Settings.json");
+            LaserSettings settings = _serialPortModel.SendReadAndConvert<LaserSettings>(new SerialCommand().GetSettings());
+            if (settings == null) return new LaserSettings
+            {
+                maxLaserPower = new []{0,0,0},
+                ComPort = _jsonHandler.Get<LaserSettings>(StoragePath.settings).ComPort
+            };
+
+            settings.ComPort = _jsonHandler.Get<LaserSettings>(StoragePath.settings).ComPort;
+            return settings;
         }
     }
 }

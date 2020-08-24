@@ -3,7 +3,6 @@ import Menu from '../shared/menu/menu';
 import './settings.css';
 import { Button, Form, Dropdown } from 'react-bootstrap';
 import 'react-bootstrap-range-slider/dist/react-bootstrap-range-slider.css';
-import RangeSlider from 'react-bootstrap-range-slider';
 import { GetComPorts, SaveSettings, GetSettings } from 'services/settings/settings';
 import { toast } from 'react-toastify';
 
@@ -14,15 +13,13 @@ class Settings extends Component {
 
         this.state = {
             settings: {
-                redPower: 115,
-                greenPower: 85,
-                bluePower: 88,
-                maxHeight: 2000,
-                minHeight: -2000,
-                maxLeft: -2000,
-                maxRight: 2000,
+                maxHeight: null,
+                minHeight: null,
+                maxLeft: null,
+                maxRight: null,
                 comDevices: null,
-                comPort: null
+                comPort: null,
+                maxLaserPower: []
             }
         }
     }
@@ -35,6 +32,8 @@ class Settings extends Component {
     getSettings = async () => {
         const data = await GetSettings();
         this.setState({ settings: data });
+        if (data.maxHeight === 0 && data.minHeight === 0 && data.maxLeft === 0 && data.maxRight === 0) toast.error('Failed to get settings from laser, make sure the laser is turned on and the right Com port is selected and saved, after that reload the page');
+        this.changeCOMPort(this.state.settings.comPort);
     }
 
     changeCOMPort = (port) => {
@@ -54,7 +53,6 @@ class Settings extends Component {
         settings.comDevices = items;
 
         this.setState({ settings: settings });
-        console.log(settings);
     }
 
     submitForm = async (e) => {
@@ -80,7 +78,7 @@ class Settings extends Component {
             settings.minHeight = -2000;
         }
 
-        if (Math.abs(settings.maxHeight - settings.minHeight) < 200) toast('difference between max height and min height is small are you sure?');
+        if (Math.abs(settings.maxHeight - settings.minHeight) < 20) toast('difference between max height and min height is small are you sure?');
 
         if (settings.maxLeft > 2000 || settings.maxLeft < -2000) {
             toast('max left value is invalid value reset to -2000');
@@ -92,7 +90,7 @@ class Settings extends Component {
             settings.minHeight = 2000;
         }
 
-        if (Math.abs(settings.maxLeft - settings.maxRight) < 200) toast('difference between max left and max right is small are you sure?');
+        if (Math.abs(settings.maxLeft - settings.maxRight) < 20) toast('difference between max left and max right is small are you sure?');
     }
 
     changeBoundaryValues = () => {
@@ -107,9 +105,9 @@ class Settings extends Component {
         this.setState({ settings: settings });
     }
 
-    changeLaserPower = (txtbox) => {
+    changeLaserPower = (arrayIndex, txtbox) => {
         let settings = this.state.settings;
-        settings.txtbox = Number(document.getElementById(txtbox).value);
+        settings.maxLaserPower[arrayIndex] = Number(document.getElementById(txtbox).value);
 
         this.setState({ settings: settings });
     }
@@ -143,17 +141,17 @@ class Settings extends Component {
                         <div>
                             <Form.Group className="laser-boundaries-textbox">
                                 <Form.Label>Red</Form.Label>
-                                <Form.Control type="number" min={110} max={255} id="txtbox-red" onInput={(e) => this.changeLaserPower('txtbox-red')} defaultValue={this.state.settings.redPower} placeholder="-2000 / 2000" />
+                                <Form.Control type="number" min={0} max={255} id="txtbox-red" onInput={(e) => this.changeLaserPower(0, 'txtbox-red')} defaultValue={this.state.settings.maxLaserPower[0]} placeholder="0 / 255" />
                             </Form.Group>
 
                             <Form.Group className="laser-boundaries-textbox">
                                 <Form.Label>Green</Form.Label>
-                                <Form.Control type="number" min={80} max={255} id="txtbox-green" onInput={(e) => this.changeLaserPower('txtbox-green')} defaultValue={this.state.settings.greenPower} placeholder="-2000 / 2000" />
+                                <Form.Control type="number" min={0} max={255} id="txtbox-green" onInput={(e) => this.changeLaserPower(1, 'txtbox-red')} defaultValue={this.state.settings.maxLaserPower[1]} placeholder="0 / 255" />
                             </Form.Group>
 
                             <Form.Group className="laser-boundaries-textbox">
                                 <Form.Label>Blue</Form.Label>
-                                <Form.Control type="number" min={84} max={255} id="txtbox-blue" onInput={(e) => this.changeLaserPower('txtbox-blue')} defaultValue={this.state.settings.bluePower} placeholder="-2000 / 2000" />
+                                <Form.Control type="number" min={0} max={255} id="txtbox-blue" onInput={(e) => this.changeLaserPower(2, 'txtbox-red')} defaultValue={this.state.settings.maxLaserPower[2]} placeholder="0 / 255" />
                             </Form.Group>
 
                             <Form.Group className="laser-boundaries-textbox">
@@ -164,6 +162,16 @@ class Settings extends Component {
                             <Form.Group className="laser-boundaries-textbox">
                                 <Form.Label>Max right</Form.Label>
                                 <Form.Control type="number" min={-2000} max={2000} defaultValue={this.state.settings.maxRight} placeholder="-2000 / 2000" id="txtbox-maxRight" onInput={() => this.changeBoundaryValues()} />
+                            </Form.Group>
+
+                            <Form.Group className="laser-boundaries-textbox">
+                                <Form.Label>Min height</Form.Label>
+                                <Form.Control type="number" min={-2000} max={2000} defaultValue={this.state.settings.minHeight} placeholder="-2000 / 2000" id="txtbox-minHeight" onInput={() => this.changeBoundaryValues()} />
+                            </Form.Group>
+
+                            <Form.Group className="laser-boundaries-textbox">
+                                <Form.Label>Max height</Form.Label>
+                                <Form.Control type="number" min={-2000} max={2000} defaultValue={this.state.settings.maxHeight} placeholder="-2000 / 2000" id="txtbox-maxHeight" onInput={() => this.changeBoundaryValues()} />
                             </Form.Group>
                         </div>
 

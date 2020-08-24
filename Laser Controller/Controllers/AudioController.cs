@@ -17,15 +17,15 @@ namespace Laser_Controller.Controllers
         }
 
         [HttpPost("start")]
-        public async Task StartAudio([FromBody] string deviceName)
+        public void StartAudio()
         {
-            await Task.Run(() => _audioLogic.StartAudioAlgorithm(deviceName));
+           _audioLogic.StartAudioAlgorithm();
         }
 
         [HttpPost("stop")]
         public void StopAudio()
         {
-            _audioLogic._algorithmEnabled = true;
+            _audioLogic.StopAudioAlgorithm();
         }
 
         [HttpGet("devices")]

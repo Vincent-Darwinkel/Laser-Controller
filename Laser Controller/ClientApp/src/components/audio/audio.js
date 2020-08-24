@@ -1,58 +1,39 @@
 import React, { Component } from 'react';
+import Menu from '../shared/menu/menu';
 import { Button, Form, Dropdown } from 'react-bootstrap';
-import { StartAudio, StopAudio, GetAudioDevices } from 'services/audio/audio';
+import { StartAudio, StopAudio } from 'services/audio/audio';
+import './audio.css';
 
 class Audio extends Component {
 
     constructor(props) {
         super(props);
-
-        this.state = {
-            devices: null,
-            selectedAudioDevice: undefined
-        }
     }
 
-    async componentDidMount() {
-        await this.getAudioDevices();
+    startAudio = () => {
+        StartAudio();
+        document.getElementById('audio-btn-stop').disabled = false;
+        document.getElementById('audio-btn-start').disabled = true;
     }
 
-    getAudioDevices = async () => {
-        const devices = await GetAudioDevices();
-        let items = [];
-
-        for (let index = 0; index < devices.length; index++) {
-            const device = devices[index];
-            items.push(<Dropdown.Item key={device} onSelect={() => this.setState({ selectedAudioDevice: device })}>{device}</Dropdown.Item>);
-        }
-
-        this.setState({ devices: items });
-    }
-
-    startAudio = async () => {
-        await StartAudio(this.state.selectedAudioDevice);
+    stopAudio = () => {
+        StopAudio();
+        document.getElementById('audio-btn-stop').disabled = true;
+        document.getElementById('audio-btn-start').disabled = false;
     }
 
     render() {
         return (
-            <div className="col-sm-6">
+            <div>
+                <Menu />
+                <div id="main">
+                    <div id="audio-control" className="col-sm-6 card">
+                        <h6>Start or stop a current session</h6>
 
-                <Form.Group>
-                    <Form.Label>Audio devices</Form.Label>
-                    <Dropdown>
-                        <Dropdown.Toggle variant="primary" id="dropdown-basic">
-                            { this.state.selectedAudioDevice ?? "Not set" }
-                        </Dropdown.Toggle>
-
-                        <Dropdown.Menu>
-                            {this.state.devices}
-                        </Dropdown.Menu>
-                    </Dropdown>
-                </Form.Group>
-
-                <Button onClick={(e) => this.startAudio()}>
-                    Start
-                </Button>
+                        <Button id="audio-btn-start" onClick={(e) => this.startAudio()}>Start <i className="fas fa-play"></i></Button>
+                        <Button id="audio-btn-stop" variant="danger" onClick={(e) => this.stopAudio()}>Stop <i class="far fa-stop-circle"></i></Button>
+                    </div>
+                </div>
             </div>
         );
     }

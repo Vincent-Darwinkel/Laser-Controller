@@ -16,23 +16,20 @@ namespace Logic
         private static int fftLength = 8192;
         private SampleAggregator sampleAggregator = new SampleAggregator(fftLength);
 
-        public bool _algorithmEnabled { get; set; }
+        private bool _algorithmEnabled;
         private static Timer _timer;
         public List<string> _audioDevices;
         private List<Complex> _avarageValues = new List<Complex>();
-        private readonly SerialPortModel _serialPortModel;
+        private SerialPortModel _serialPortModel;
 
         public AudioLogic(SerialPortModel serialPortModel)
         {
+            _serialPortModel = serialPortModel;
             SetTimer();
             sampleAggregator.FftCalculated += FftCalculated;
             sampleAggregator.PerformFFT = true;
-            _serialPortModel = serialPortModel;
             waveIn = new WasapiLoopbackCapture();
-
             waveIn.DataAvailable += OnDataAvailable;
-
-            waveIn.StartRecording();
         }
 
         void OnDataAvailable(object sender, WaveInEventArgs e)
@@ -75,8 +72,6 @@ namespace Logic
             _timer = new Timer(600);
             _timer.Elapsed += TimerTick;
             _timer.AutoReset = true;
-            _timer.Enabled = true;
-            _timer.Start();
         }
 
         private Complex GetAverageValue()
@@ -119,9 +114,22 @@ namespace Logic
             _serialPortModel.SendCommand(new SerialCommand().SetAnimationSpeed(animationSpeed));
         }
 
-        public void StartAudioAlgorithm(string device)
+        public void StartAudioAlgorithm()
         {
+            _algorithmEnabled = true;
+            waveIn.StartRecording();
+            _timer.Enabled = true;
+            _timer.Start();
+        }
 
+        public void StopAudioAlgorithm()
+        {
+            _algorithmEnabled = true;
+            waveIn.StopRecording();
+            _timer.Enabled = false;
+            _timer.Stop();
+
+            _serialPortModel.SendCommand(new SerialCommand().SetAnimationSpeed(AnimationSpeed.Off));
         }
     }
 }
