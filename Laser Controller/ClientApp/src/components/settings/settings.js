@@ -146,12 +146,12 @@ class Settings extends Component {
 
                             <Form.Group className="laser-boundaries-textbox">
                                 <Form.Label>Green</Form.Label>
-                                <Form.Control type="number" min={0} max={255} id="txtbox-green" onInput={(e) => this.changeLaserPower(1, 'txtbox-red')} defaultValue={this.state.settings.maxLaserPower[1]} placeholder="0 / 255" />
+                                <Form.Control type="number" min={0} max={255} id="txtbox-green" onInput={(e) => this.changeLaserPower(1, 'txtbox-green')} defaultValue={this.state.settings.maxLaserPower[1]} placeholder="0 / 255" />
                             </Form.Group>
 
                             <Form.Group className="laser-boundaries-textbox">
                                 <Form.Label>Blue</Form.Label>
-                                <Form.Control type="number" min={0} max={255} id="txtbox-blue" onInput={(e) => this.changeLaserPower(2, 'txtbox-red')} defaultValue={this.state.settings.maxLaserPower[2]} placeholder="0 / 255" />
+                                <Form.Control type="number" min={0} max={255} id="txtbox-blue" onInput={(e) => this.changeLaserPower(2, 'txtbox-blue')} defaultValue={this.state.settings.maxLaserPower[2]} placeholder="0 / 255" />
                             </Form.Group>
 
                             <Form.Group className="laser-boundaries-textbox">

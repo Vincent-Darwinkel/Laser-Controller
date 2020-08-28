@@ -1,5 +1,4 @@
-﻿using System;
-using Interfaces;
+﻿using Interfaces;
 
 namespace Models
 {
@@ -7,7 +6,7 @@ namespace Models
     {
         public string SaveSettings(LaserSettings settings)
         {
-            return $"(set-settings,{Newtonsoft.Json.JsonConvert.SerializeObject(settings)}";
+            return $"(set-settings,{Newtonsoft.Json.JsonConvert.SerializeObject(settings)})";
         }
 
         public string GetSettings()
@@ -17,7 +16,6 @@ namespace Models
 
         public string SetAnimationSpeed(AnimationSpeed animationSpeed)
         {
-            Console.WriteLine((int)animationSpeed);
             return $"(set-animationspeed,{(int)animationSpeed})";
         }
     }

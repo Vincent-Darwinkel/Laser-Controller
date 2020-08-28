@@ -111,6 +111,7 @@ namespace Logic
             else if (average.Y > 0.020 && average.Y < 0.026) animationSpeed = AnimationSpeed.Fast;
             else if (average.Y > 0.026) animationSpeed = AnimationSpeed.VeryFast;
 
+            Console.WriteLine(animationSpeed.ToString());
             _serialPortModel.SendCommand(new SerialCommand().SetAnimationSpeed(animationSpeed));
         }
 

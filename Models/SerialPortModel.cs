@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO.Ports;
+using System.Text;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Models
 {
@@ -32,7 +34,7 @@ namespace Models
 
                 // sometimes the laser doesn't respond fast enough so we try it more times
                 int tries = 0;
-                while (string.IsNullOrEmpty(json) && tries < 10)
+                while (string.IsNullOrEmpty(json) && tries < 1000)
                 {
                     _serialPort.WriteLine(command);
                     json = _serialPort.ReadExisting();

@@ -21,3 +21,8 @@
 #main form > div {
   margin-bottom: 25px;
 }
+
+.page-name {
+  text-align: center;
+  margin-top: 10px;
+}

@@ -27,6 +27,7 @@ class Audio extends Component {
             <div>
                 <Menu />
                 <div id="main">
+                    <h5 className="page-name">Audio</h5>
                     <div id="audio-control" className="col-sm-6 card">
                         <h6>Start or stop a current session</h6>
 
