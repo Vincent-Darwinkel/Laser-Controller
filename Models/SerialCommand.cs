@@ -18,5 +18,20 @@ namespace Models
         {
             return $"(set-animationspeed,{(int)animationSpeed})";
         }
+
+        public string Galvo(int x, int y)
+        {
+            return $"(g,{x}:{y})";
+        }
+
+        public string Lasers(LaserColors colors)
+        {
+            return $"(l,{colors.Red}:{colors.Green}|{colors.Blue})";
+        }
+
+        public string LasersOff()
+        {
+            return "(l,0:0|0)";
+        }
     }
 }

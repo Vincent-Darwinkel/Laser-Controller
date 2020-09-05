@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Models;
+using Models.LaserPatterns;
 
 namespace Laser_Controller
 {
@@ -35,10 +36,12 @@ namespace Laser_Controller
 
         private IServiceCollection AddDependencies(IServiceCollection services)
         {
+            services.AddTransient<PatternLogic>();
             services.AddTransient<JsonHandler>();
             services.AddSingleton<AudioLogic>();
             services.AddSingleton(service => new JsonHandler().Get<LaserSettings>(StoragePath.settings));
             services.AddSingleton<SerialPortModel>();
+            services.AddTransient<LaserPatternHelper>();
 
             return services;
         }

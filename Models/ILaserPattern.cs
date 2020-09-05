@@ -14,5 +14,7 @@
 
     public interface ILaserPattern
     {
+        public void Project(int total);
+        public AnimationSpeed GetAnimationSpeed();
     }
 }

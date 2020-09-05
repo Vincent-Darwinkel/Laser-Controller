@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO.Ports;
-using System.Text;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Models
 {
     public class SerialPortModel
     {
-        private readonly SerialPort _serialPort = new SerialPort();
+        private readonly SerialPort _serialPort;
 
         public SerialPortModel(LaserSettings settings)
         {
             if (string.IsNullOrEmpty(settings.ComPort)) settings.ComPort = "COM4";
-            _serialPort.PortName = settings.ComPort;
-            _serialPort.BaudRate = 600000;
+            _serialPort = new SerialPort(settings.ComPort, 128000);
+            _serialPort.WriteBufferSize = 100000;
+            _serialPort.Open();
         }
 
         public IEnumerable<string> GetPortNames()
@@ -27,9 +26,6 @@ namespace Models
         {
             try
             {
-                if (_serialPort.IsOpen) return default;
-                _serialPort.Open();
-
                 string json = "";
 
                 // sometimes the laser doesn't respond fast enough so we try it more times
@@ -49,47 +45,12 @@ namespace Models
                 // catch locked exception
             }
 
-            finally
-            {
-                try
-                {
-                    _serialPort.Close();
-                }
-                catch (Exception e)
-                {
-
-                }
-            }
-
             return default;
         }
 
         public void SendCommand(string command)
         {
-            try
-            {
-                if (_serialPort.IsOpen) return;
-
-                _serialPort.Open();
-                _serialPort.WriteLine(command);
-            }
-
-            catch (Exception e)
-            {
-                // catch locked exception
-            }
-
-            finally
-            {
-                try
-                {
-                    _serialPort.Close();
-                }
-                catch (Exception e)
-                {
-                    
-                }
-            }
+            _serialPort.WriteLine(command);
         }
     }
 }
