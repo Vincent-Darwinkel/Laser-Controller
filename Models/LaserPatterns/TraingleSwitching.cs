@@ -23,7 +23,7 @@ namespace Models.LaserPatterns
 
             for (int k = 0; k < total * 3; k++)
             {
-                for (int i = 0; i < 80; i += (int) AnimationSpeed / 2)
+                for (int i = 0; i < 120; i += (int) AnimationSpeed / 2)
                 {
                     _serialPortModel.SendCommand(new SerialCommand().Galvo(_settings.maxLeft, _settings.minHeight));
                     System.Threading.Thread.SpinWait(40000);
@@ -33,7 +33,7 @@ namespace Models.LaserPatterns
                     System.Threading.Thread.SpinWait(40000);
                 }
 
-                for (int i = 0; i < 80; i += (int)AnimationSpeed / 2)
+                for (int i = 0; i < 120; i += (int)AnimationSpeed / 2)
                 {
                     _serialPortModel.SendCommand(new SerialCommand().Galvo(_settings.maxRight, _settings.minHeight));
                     System.Threading.Thread.SpinWait(40000);

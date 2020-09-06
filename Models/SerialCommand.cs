@@ -31,7 +31,7 @@ namespace Models
 
         public string LasersOff()
         {
-            return "(l,0:0|0)";
+            return "(off)";
         }
     }
 }

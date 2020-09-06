@@ -24,13 +24,10 @@ namespace Logic
 
         public void PlayAll()
         {
-            for (int i = 0; i < 10; i++)
+            foreach (var pattern in _patterns)
             {
-                foreach (var pattern in _patterns)
-                {
-                    int total = new Random(Guid.NewGuid().GetHashCode()).Next(1, 5);
-                    pattern.Project(total);
-                }
+                int total = new Random(Guid.NewGuid().GetHashCode()).Next(1, 5);
+                pattern.Project(total);
             }
         }
 
