@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -27,7 +29,10 @@ namespace Logic
             foreach (var pattern in _patterns)
             {
                 int total = new Random(Guid.NewGuid().GetHashCode()).Next(1, 5);
-                pattern.Project(total);
+             
+                var task = new Task(() => pattern.Project(total), TaskCreationOptions.LongRunning);
+                task.Start();
+                task.Wait();
             }
         }
 
@@ -37,7 +42,9 @@ namespace Logic
             if (pattern == null) return;
 
             int total = new Random(Guid.NewGuid().GetHashCode()).Next(1, 5);
-            pattern.Project(total);
+            var task = new Task(() => pattern.Project(total), TaskCreationOptions.LongRunning);
+            task.Start();
+            task.Wait();
         }
     }
 }

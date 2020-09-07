@@ -28,7 +28,6 @@ namespace Models.LaserPatterns
                 int right = xCenter + 50;
 
                 int y = new Random(Guid.NewGuid().GetHashCode()).Next(_settings.minHeight, _settings.maxHeight);
-                _serialPortModel.SendCommand(new SerialCommand().Lasers(colors));
 
                 while (left > _settings.maxLeft || right < _settings.maxRight)
                 {

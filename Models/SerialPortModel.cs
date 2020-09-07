@@ -13,7 +13,6 @@ namespace Models
         {
             if (string.IsNullOrEmpty(settings.ComPort)) settings.ComPort = "COM4";
             _serialPort = new SerialPort(settings.ComPort, 128000);
-            _serialPort.WriteBufferSize = 100000;
             _serialPort.Open();
         }
 
@@ -48,8 +47,14 @@ namespace Models
             return default;
         }
 
+        public void Close()
+        {
+            _serialPort.Close();
+        }
+
         public void SendCommand(string command)
         {
+            if (!_serialPort.IsOpen) _serialPort.Open();
             _serialPort.WriteLine(command);
         }
     }
