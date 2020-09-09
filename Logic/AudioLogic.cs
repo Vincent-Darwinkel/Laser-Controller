@@ -23,7 +23,6 @@ namespace Logic
 
         private readonly IServiceProvider _serviceProvider;
         private readonly LaserAnimationStatus _laserAnimationStatus;
-        private readonly AudioSettings _settings;
 
         private readonly List<ILaserPattern> _patterns = new List<ILaserPattern>();
         private List<ILaserPattern> _previousExecutedPatterns = new List<ILaserPattern>();
@@ -40,7 +39,6 @@ namespace Logic
         {
             _serviceProvider = serviceProvider;
             _laserAnimationStatus = laserAnimationStatus;
-            _settings = settings;
 
             _audioCalibrationValue = settings.AudioCalibrationValue;
 
@@ -122,8 +120,7 @@ namespace Logic
             if (average.Y != average.Y || average.X != average.X)
                 return AnimationSpeed.Off; // check if value is a number if not no music is played
 
-            if (_audioCalibrationValue != 0)
-                average.Y += _audioCalibrationValue;
+            average.Y += _audioCalibrationValue;
 
             if (average.Y > 0.010 && average.Y < 0.014) return AnimationSpeed.Slow;
             if (average.Y > 0.014 && average.Y < 0.018) return AnimationSpeed.Medium;

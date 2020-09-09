@@ -36,7 +36,7 @@ namespace Laser_Controller
 
         private IServiceCollection AddDependencies(IServiceCollection services)
         {
-            services.AddTransient<PatternLogic>();
+            services.AddSingleton<PatternLogic>();
             services.AddTransient<JsonHandler>();
             services.AddSingleton<AudioLogic>();
             services.AddSingleton(service => new JsonHandler().Get<LaserSettings>(StoragePath.settings));

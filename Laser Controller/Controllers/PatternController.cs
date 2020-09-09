@@ -31,13 +31,13 @@ namespace Laser_Controller.Controllers
         [HttpPost("all")]
         public void PlayAll([FromBody] PatternOptions options)
         {
-            new Task(() => _patternLogic.PlayAll(options), TaskCreationOptions.RunContinuationsAsynchronously).Start();
+            _patternLogic.PlayAll(options);
         }
 
         [HttpPost("play")]
         public void PlayPattern([FromBody] PatternOptions options)
-{
-            new Task(() => _patternLogic.PlayPattern(options), TaskCreationOptions.RunContinuationsAsynchronously).Start();
+        {
+            _patternLogic.PlayPattern(options);
         }
     }
 }

@@ -12,6 +12,7 @@ namespace Logic
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly List<ILaserPattern> _patterns = new List<ILaserPattern>();
+        private Task _playPatternTask;
 
         public PatternLogic(IServiceProvider serviceProvider)
         {
@@ -31,14 +32,26 @@ namespace Logic
                 
             }
         }
+        
+        private bool AnimationCompleted()
+        {
+            return _playPatternTask == null || _playPatternTask.Status == TaskStatus.Canceled ||
+                   _playPatternTask.Status == TaskStatus.Created || _playPatternTask.Status == TaskStatus.RanToCompletion;
+        }
 
         public void PlayAll(PatternOptions options)
         {
-            foreach (var pattern in _patterns)
+            if (!AnimationCompleted()) return;
+            _playPatternTask = new Task(() =>
             {
-                int total = new Random(Guid.NewGuid().GetHashCode()).Next(1, 5);
-                pattern.Project(options);
-            }
+                foreach (var pattern in _patterns)
+                {
+                    int total = new Random(Guid.NewGuid().GetHashCode()).Next(1, 5);
+                    pattern.Project(options);
+                }
+            }, TaskCreationOptions.RunContinuationsAsynchronously);
+
+            _playPatternTask.Start();
         }
 
         /// <summary>
@@ -49,10 +62,17 @@ namespace Logic
         /// <param name="duration"></param>
         public void PlayPattern(PatternOptions options)
         {
-            ILaserPattern pattern = _patterns.Find(p => p.GetType().Name == options.PatternName);
-            if (pattern == null) return;
+            if (!AnimationCompleted()) return;
+            _playPatternTask = new Task(() =>
+            {
+                ILaserPattern pattern = _patterns.Find(p => p.GetType().Name == options.PatternName);
+                if (pattern == null) return;
 
-            pattern.Project(options);
+                pattern.Project(options);
+
+            }, TaskCreationOptions.RunContinuationsAsynchronously);
+
+            _playPatternTask.Start();
         }
     }
 }

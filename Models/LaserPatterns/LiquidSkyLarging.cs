@@ -43,11 +43,11 @@ namespace Models.LaserPatterns
                 {
                     if (stopwatch.ElapsedMilliseconds > options.DurationMilliseconds && options.DurationMilliseconds != 0 || _laserAnimationStatus.AnimationCanceled) break;
 
-                    _laser.SendTo(left -= (int)animationSpeed, y);
+                    _laser.SendTo(left -= (int)animationSpeed / 2, y);
                     System.Threading.Thread.SpinWait(30000);
                     _laser.On(colors);
 
-                    _laser.SendTo(right += (int)animationSpeed, y);
+                    _laser.SendTo(right += (int)animationSpeed / 2, y);
                     System.Threading.Thread.SpinWait(30000);
                     _laser.Off();
                     System.Threading.Thread.SpinWait(100);
