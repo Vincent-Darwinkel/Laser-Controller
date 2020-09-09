@@ -49,6 +49,8 @@ namespace Models.LaserPatterns
 
                     _laser.SendTo(right += (int)animationSpeed, y);
                     System.Threading.Thread.SpinWait(30000);
+                    _laser.Off();
+                    System.Threading.Thread.SpinWait(100);
                 }
             }
 

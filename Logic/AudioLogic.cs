@@ -19,7 +19,7 @@ namespace Logic
         private readonly SampleAggregator sampleAggregator = new SampleAggregator(fftLength);
 
         private static Timer _timer;
-        private readonly List<Complex> _avarageValues = new List<Complex>();
+        private readonly List<Complex> _averageValues = new List<Complex>();
 
         private readonly IServiceProvider _serviceProvider;
         private readonly LaserAnimationStatus _laserAnimationStatus;
@@ -32,6 +32,10 @@ namespace Logic
 
         private int _totalTimesOff;
         private Task _animationTask;
+
+        private double _audioCalibrationValue = -200;
+        private bool _audioCalibrated;
+
         public AudioLogic(IServiceProvider serviceProvider, LaserAnimationStatus laserAnimationStatus)
         {
             _serviceProvider = serviceProvider;
@@ -55,6 +59,19 @@ namespace Logic
             catch (Exception e) { /* catch windows forms not found exception */ }
         }
 
+        private void CalibrateAudioVolume()
+        {
+            var complex = new Complex();
+            while (complex.Y == 0 || complex.Y != complex.Y)
+            {
+                complex = GetAverageBassVolume();
+                Console.Beep(125, 1000);
+            }
+
+            Console.WriteLine(GetAverageBassVolume().Y + " Calibrated");
+            _audioCalibrated = true;
+        }
+
         private void OnDataAvailable(object sender, WaveInEventArgs e)
         {
             byte[] buffer = e.Buffer;
@@ -75,11 +92,11 @@ namespace Logic
 
             foreach (var complex in e.Result)
             {
-                if (highestValue.Y == 0 || complex.Y > highestValue.Y && index < 25 && index > 0) highestValue = complex;
+                if (highestValue.Y == 0 || complex.Y > highestValue.Y && index < 25 && index > 5) highestValue = complex; // get tones between 25 / 145 hz
                 index++;
             }
 
-            _avarageValues.Add(highestValue);
+            _averageValues.Add(highestValue);
         }
         
         private void SetTimer()
@@ -96,16 +113,16 @@ namespace Logic
 
             var averageComplex = new Complex();
 
-            foreach (var value in _avarageValues)
+            foreach (var value in _averageValues)
             {
                 totalX += value.X;
                 totalY += value.Y;
             }
 
-            averageComplex.Y = totalY / _avarageValues.Count;
-            averageComplex.X = totalX / _avarageValues.Count;
+            averageComplex.Y = totalY / _averageValues.Count;
+            averageComplex.X = totalX / _averageValues.Count;
 
-            _avarageValues.Clear();
+            _averageValues.Clear();
 
             return averageComplex;
         }
@@ -145,22 +162,27 @@ namespace Logic
             _averageAnimationSpeed = GetAverageAnimationSpeed();
             AnimationSpeed currentSpeed = GetAnimationSpeedByFftData(averageBassVolume);
 
-            _previousAnimationSpeeds.Add(currentSpeed);
-            if (_previousAnimationSpeeds.Count > 5) _previousAnimationSpeeds.RemoveRange(0, _previousAnimationSpeeds.Count - 3);
-
-            Console.WriteLine(_averageAnimationSpeed);
-
-            if (MusicIsPlaying())
+            if (!_audioCalibrated)
             {
-                if (_averageAnimationSpeed != AnimationSpeed.Off) _laserAnimationStatus.AnimationSpeed = _averageAnimationSpeed;
-
-                PlayAnimation(GetRandomPattern(), new PatternOptions
-                {
-                    AnimationSpeed = AnimationSpeed.NotSet,
-                    DurationMilliseconds = 0,
-                    Total = new Random(Guid.NewGuid().GetHashCode()).Next(2, 5)
-                });
+                new Task(() => CalibrateAudioVolume()).Start();
+                return;
             }
+
+            _previousAnimationSpeeds.Add(currentSpeed);
+            if (_previousAnimationSpeeds.Count > 8) _previousAnimationSpeeds.RemoveRange(0, _previousAnimationSpeeds.Count - 3);
+
+            Console.WriteLine(averageBassVolume.Y);
+            Console.WriteLine(currentSpeed);
+
+            if (!MusicIsPlaying()) return;
+            if (_averageAnimationSpeed != AnimationSpeed.Off) _laserAnimationStatus.AnimationSpeed = _averageAnimationSpeed;
+
+            PlayAnimation(GetRandomPattern(), new PatternOptions
+            {
+                AnimationSpeed = AnimationSpeed.NotSet,
+                DurationMilliseconds = 0,
+                Total = new Random(Guid.NewGuid().GetHashCode()).Next(2, 5)
+            });
         }
 
         private ILaserPattern GetRandomPattern()
