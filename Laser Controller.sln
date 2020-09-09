@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "Models\Models.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Logic", "Logic\Logic.csproj", "{2788EE2F-E5E2-4627-918C-27D04983C776}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Enums", "Enums\Enums.csproj", "{17182826-9672-47E2-83DD-77E874428E90}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{2788EE2F-E5E2-4627-918C-27D04983C776}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2788EE2F-E5E2-4627-918C-27D04983C776}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2788EE2F-E5E2-4627-918C-27D04983C776}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17182826-9672-47E2-83DD-77E874428E90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17182826-9672-47E2-83DD-77E874428E90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17182826-9672-47E2-83DD-77E874428E90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17182826-9672-47E2-83DD-77E874428E90}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

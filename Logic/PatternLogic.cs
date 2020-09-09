@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Interfaces;
 using Microsoft.Extensions.DependencyInjection;
+using Models;
 
 namespace Logic
 {
@@ -17,33 +17,48 @@ namespace Logic
         {
             _serviceProvider = serviceProvider;
 
-            var patterns = AppDomain.CurrentDomain.GetAssemblies().SelectMany(e => e.GetTypes())
-                .Where(x => typeof(ILaserPattern).IsAssignableFrom(x) && !x.IsInterface);
+            try
+            {
+                var patterns = AppDomain.CurrentDomain.GetAssemblies().SelectMany(e => e.GetTypes())
+                    .Where(x => typeof(ILaserPattern).IsAssignableFrom(x) && !x.IsInterface);
 
-            foreach (var pattern in patterns)
-                _patterns.Add((ILaserPattern)ActivatorUtilities.CreateInstance(_serviceProvider, pattern));
+                foreach (var pattern in patterns)
+                    _patterns.Add((ILaserPattern)ActivatorUtilities.CreateInstance(_serviceProvider, pattern));
+            }
+
+            catch (Exception e)
+            {
+                
+            }
         }
 
-        public void PlayAll()
+        public void PlayAll(PatternOptions options)
         {
             foreach (var pattern in _patterns)
             {
                 int total = new Random(Guid.NewGuid().GetHashCode()).Next(1, 5);
-             
-                var task = new Task(() => pattern.Project(total), TaskCreationOptions.LongRunning);
+
+                var task = new Task(() => pattern.Project(options), TaskCreationOptions.RunContinuationsAsynchronously);
                 task.Start();
                 task.Wait();
             }
         }
 
-        public void PlayPattern(string patternName)
+        /// <summary>
+        /// Plays the specified patternOptions, optional duration animation will stop after set milliseconds
+        /// </summary>
+        /// <param name="patternName"></param>
+        /// <param name="animationSpeed"></param>
+        /// <param name="duration"></param>
+        public void PlayPattern(PatternOptions options)
         {
-            ILaserPattern pattern = _patterns.Find(p => p.GetType().Name == patternName);
+            ILaserPattern pattern = _patterns.Find(p => p.GetType().Name == options.PatternName);
             if (pattern == null) return;
 
             int total = new Random(Guid.NewGuid().GetHashCode()).Next(1, 5);
-            var task = new Task(() => pattern.Project(total), TaskCreationOptions.LongRunning);
+            var task = new Task(() => pattern.Project(options), TaskCreationOptions.RunContinuationsAsynchronously);
             task.Start();
+
             task.Wait();
         }
     }

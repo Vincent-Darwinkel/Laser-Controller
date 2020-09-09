@@ -4,6 +4,7 @@ using System.Linq;
 using Interfaces;
 using Logic;
 using Microsoft.AspNetCore.Mvc;
+using Models;
 
 namespace Laser_Controller.Controllers
 {
@@ -27,15 +28,15 @@ namespace Laser_Controller.Controllers
         }
 
         [HttpPost("all")]
-        public void PlayAll()
+        public void PlayAll([FromBody] PatternOptions options)
         {
-            _patternLogic.PlayAll();
+            _patternLogic.PlayAll(options);
         }
 
-        [HttpPost("play/{patternName}")]
-        public void PlayPattern(string patternName)
-        {
-            _patternLogic.PlayPattern(patternName);
+        [HttpPost("play")]
+        public void PlayPattern([FromBody] PatternOptions options)
+{
+            _patternLogic.PlayPattern(options);
         }
     }
 }

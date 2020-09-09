@@ -27,11 +27,5 @@ namespace Laser_Controller.Controllers
         {
             _audioLogic.StopAudioAlgorithm();
         }
-
-        [HttpGet("devices")]
-        public List<string> GetAudioDevices()
-        {
-            return _audioLogic.GetAudioDevices();
-        }
     }
 }

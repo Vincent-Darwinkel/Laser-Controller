@@ -1,54 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using Enums;
 using Interfaces;
 
 namespace Models.LaserPatterns
 {
     public class MovingDotsUpDown : ILaserPattern
     {
-        private AnimationSpeed AnimationSpeed { get; } = AnimationSpeed.Medium;
-        private readonly SerialPortModel _serialPortModel;
+        private readonly Laser _laser;
         private readonly LaserPatternHelper _laserPatternHelper;
         private readonly LaserSettings _settings;
+        private readonly LaserAnimationStatus _laserAnimationStatus;
 
-        public MovingDotsUpDown(SerialPortModel serialPortModel, LaserPatternHelper laserPatternHelper, LaserSettings settings)
+        public MovingDotsUpDown(Laser laser, LaserPatternHelper laserPatternHelper, LaserSettings settings, LaserAnimationStatus laserAnimationStatus)
         {
-            _serialPortModel = serialPortModel;
+            _laser = laser;
             _laserPatternHelper = laserPatternHelper;
             _settings = settings;
+            _laserAnimationStatus = laserAnimationStatus;
         }
 
-        public void Project(int total)
+        public void Project(PatternOptions options)
         {
             int totalLines = 4;
             if (totalLines < 2) totalLines = 2;
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
 
             var colors = new List<LaserColors>();
 
             for (int i = 0; i < totalLines; i++)
                 colors.Add(_laserPatternHelper.GetRandomLaserColors());
 
-            for (double i = 0; i < 8 * total; i += 0.010)
+            AnimationSpeed animationSpeed = AnimationSpeed.NotSet;
+
+            for (double i = 0; i < 6.5 * options.Total; i += (double)animationSpeed / 700)
             {
+                if (stopwatch.ElapsedMilliseconds > options.DurationMilliseconds && options.DurationMilliseconds != 0 || _laserAnimationStatus.AnimationCanceled) break;
+                if (options.AnimationSpeed == AnimationSpeed.NotSet) animationSpeed = _laserAnimationStatus.AnimationSpeed;
+
                 for (int line = 0; line < totalLines; line++)
                 {
                     int x = Convert.ToInt32(Math.Cos(i + line) * Math.Abs(_settings.maxLeft));
                     int y = Convert.ToInt32(Math.Sin(i) * Math.Abs(2000));
 
-                    _serialPortModel.SendCommand(new SerialCommand().Galvo(x, y));
-                    _serialPortModel.SendCommand(new SerialCommand().Lasers(colors[line]));
+                    _laser.SendTo(x, y);
                     System.Threading.Thread.SpinWait(40000);
 
-                    _serialPortModel.SendCommand(new SerialCommand().LasersOff());
+                    _laser.On(colors[line]);
+
+                    System.Threading.Thread.SpinWait(10000);
+                    _laser.Off();
                 }
             }
-
-            _serialPortModel.Close();
-        }
-
-        public AnimationSpeed GetAnimationSpeed()
-        {
-            return AnimationSpeed;
         }
     }
 }

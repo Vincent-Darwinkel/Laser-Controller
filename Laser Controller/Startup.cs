@@ -42,6 +42,8 @@ namespace Laser_Controller
             services.AddSingleton(service => new JsonHandler().Get<LaserSettings>(StoragePath.settings));
             services.AddSingleton<SerialPortModel>();
             services.AddTransient<LaserPatternHelper>();
+            services.AddSingleton<Laser>();
+            services.AddSingleton<LaserAnimationStatus>();
 
             return services;
         }
