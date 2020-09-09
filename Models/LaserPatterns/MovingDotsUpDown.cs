@@ -34,7 +34,7 @@ namespace Models.LaserPatterns
             for (int i = 0; i < totalLines; i++)
                 colors.Add(_laserPatternHelper.GetRandomLaserColors());
 
-            AnimationSpeed animationSpeed = AnimationSpeed.NotSet;
+            AnimationSpeed animationSpeed = options.AnimationSpeed;
 
             for (double i = 0; i < 6.5 * options.Total; i += (double)animationSpeed / 700)
             {
@@ -51,7 +51,7 @@ namespace Models.LaserPatterns
 
                     _laser.On(colors[line]);
 
-                    System.Threading.Thread.SpinWait(10000);
+                    System.Threading.Thread.SpinWait(2000);
                     _laser.Off();
                 }
             }

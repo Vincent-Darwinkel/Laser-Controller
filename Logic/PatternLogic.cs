@@ -37,10 +37,7 @@ namespace Logic
             foreach (var pattern in _patterns)
             {
                 int total = new Random(Guid.NewGuid().GetHashCode()).Next(1, 5);
-
-                var task = new Task(() => pattern.Project(options), TaskCreationOptions.RunContinuationsAsynchronously);
-                task.Start();
-                task.Wait();
+                pattern.Project(options);
             }
         }
 
@@ -55,11 +52,7 @@ namespace Logic
             ILaserPattern pattern = _patterns.Find(p => p.GetType().Name == options.PatternName);
             if (pattern == null) return;
 
-            int total = new Random(Guid.NewGuid().GetHashCode()).Next(1, 5);
-            var task = new Task(() => pattern.Project(options), TaskCreationOptions.RunContinuationsAsynchronously);
-            task.Start();
-
-            task.Wait();
+            pattern.Project(options);
         }
     }
 }

@@ -23,6 +23,7 @@ namespace Logic
 
         private readonly IServiceProvider _serviceProvider;
         private readonly LaserAnimationStatus _laserAnimationStatus;
+        private readonly AudioSettings _settings;
 
         private readonly List<ILaserPattern> _patterns = new List<ILaserPattern>();
         private List<ILaserPattern> _previousExecutedPatterns = new List<ILaserPattern>();
@@ -33,13 +34,15 @@ namespace Logic
         private int _totalTimesOff;
         private Task _animationTask;
 
-        private double _audioCalibrationValue = -200;
-        private bool _audioCalibrated;
+        public float _audioCalibrationValue { get; set; } = 0;
 
-        public AudioLogic(IServiceProvider serviceProvider, LaserAnimationStatus laserAnimationStatus)
+        public AudioLogic(IServiceProvider serviceProvider, LaserAnimationStatus laserAnimationStatus, AudioSettings settings)
         {
             _serviceProvider = serviceProvider;
             _laserAnimationStatus = laserAnimationStatus;
+            _settings = settings;
+
+            _audioCalibrationValue = settings.AudioCalibrationValue;
 
             SetTimer();
             sampleAggregator.FftCalculated += FftCalculated;
@@ -57,19 +60,6 @@ namespace Logic
             }
 
             catch (Exception e) { /* catch windows forms not found exception */ }
-        }
-
-        private void CalibrateAudioVolume()
-        {
-            var complex = new Complex();
-            while (complex.Y == 0 || complex.Y != complex.Y)
-            {
-                complex = GetAverageBassVolume();
-                Console.Beep(125, 1000);
-            }
-
-            Console.WriteLine(GetAverageBassVolume().Y + " Calibrated");
-            _audioCalibrated = true;
         }
 
         private void OnDataAvailable(object sender, WaveInEventArgs e)
@@ -98,7 +88,7 @@ namespace Logic
 
             _averageValues.Add(highestValue);
         }
-        
+
         private void SetTimer()
         {
             _timer = new Timer(400);
@@ -132,6 +122,9 @@ namespace Logic
             if (average.Y != average.Y || average.X != average.X)
                 return AnimationSpeed.Off; // check if value is a number if not no music is played
 
+            if (_audioCalibrationValue != 0)
+                average.Y += _audioCalibrationValue;
+
             if (average.Y > 0.010 && average.Y < 0.014) return AnimationSpeed.Slow;
             if (average.Y > 0.014 && average.Y < 0.018) return AnimationSpeed.Medium;
             if (average.Y > 0.018 && average.Y < 0.022) return AnimationSpeed.Fast;
@@ -156,17 +149,11 @@ namespace Logic
             return false;
         }
 
-        private void TimerTick(object source, ElapsedEventArgs e)
+        private void ExecuteAudioAlgorithm()
         {
             Complex averageBassVolume = GetAverageBassVolume();
             _averageAnimationSpeed = GetAverageAnimationSpeed();
             AnimationSpeed currentSpeed = GetAnimationSpeedByFftData(averageBassVolume);
-
-            if (!_audioCalibrated)
-            {
-                new Task(() => CalibrateAudioVolume()).Start();
-                return;
-            }
 
             _previousAnimationSpeeds.Add(currentSpeed);
             if (_previousAnimationSpeeds.Count > 8) _previousAnimationSpeeds.RemoveRange(0, _previousAnimationSpeeds.Count - 3);
@@ -183,6 +170,11 @@ namespace Logic
                 DurationMilliseconds = 0,
                 Total = new Random(Guid.NewGuid().GetHashCode()).Next(2, 5)
             });
+        }
+
+        private void TimerTick(object source, ElapsedEventArgs e)
+        {
+            ExecuteAudioAlgorithm();
         }
 
         private ILaserPattern GetRandomPattern()

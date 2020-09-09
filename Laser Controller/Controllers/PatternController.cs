@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Interfaces;
 using Logic;
 using Microsoft.AspNetCore.Mvc;
@@ -30,13 +31,13 @@ namespace Laser_Controller.Controllers
         [HttpPost("all")]
         public void PlayAll([FromBody] PatternOptions options)
         {
-            _patternLogic.PlayAll(options);
+            new Task(() => _patternLogic.PlayAll(options), TaskCreationOptions.RunContinuationsAsynchronously).Start();
         }
 
         [HttpPost("play")]
         public void PlayPattern([FromBody] PatternOptions options)
 {
-            _patternLogic.PlayPattern(options);
+            new Task(() => _patternLogic.PlayPattern(options), TaskCreationOptions.RunContinuationsAsynchronously).Start();
         }
     }
 }

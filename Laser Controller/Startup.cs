@@ -40,6 +40,7 @@ namespace Laser_Controller
             services.AddTransient<JsonHandler>();
             services.AddSingleton<AudioLogic>();
             services.AddSingleton(service => new JsonHandler().Get<LaserSettings>(StoragePath.settings));
+            services.AddSingleton(service => new JsonHandler().Get<AudioSettings>(StoragePath.audio));
             services.AddSingleton<SerialPortModel>();
             services.AddTransient<LaserPatternHelper>();
             services.AddSingleton<Laser>();
