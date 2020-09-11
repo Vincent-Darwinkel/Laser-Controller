@@ -29,9 +29,11 @@ namespace Models.LaserPatterns
             stopwatch.Start();
 
             AnimationSpeed animationSpeed = options.AnimationSpeed;
+            int iterations = 0;
 
-            for (int i = 0; i < options.Total; i++)
+            while (stopwatch.ElapsedMilliseconds < options.DurationMilliseconds || iterations < options.Total)
             {
+                iterations++;
                 if (options.AnimationSpeed == AnimationSpeed.NotSet) animationSpeed = _laserAnimationStatus.AnimationSpeed;
 
                 int left = xCenter - 100;

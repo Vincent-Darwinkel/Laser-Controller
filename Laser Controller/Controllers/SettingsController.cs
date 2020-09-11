@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Logic;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +12,13 @@ namespace Laser_Controller.Controllers
     {
         private readonly JsonHandler _jsonHandler;
         private readonly SerialPortModel _serialPortModel;
+        private readonly LaserSettings _settings;
 
-        public SettingsController(JsonHandler jsonHandler, SerialPortModel serialPortModel)
+        public SettingsController(JsonHandler jsonHandler, SerialPortModel serialPortModel, LaserSettings settings)
         {
             _jsonHandler = jsonHandler;
             _serialPortModel = serialPortModel;
+            _settings = settings;
         }
 
         [HttpGet("getcomports")]
@@ -29,6 +30,13 @@ namespace Laser_Controller.Controllers
         [HttpPost("savesettings")]
         public async Task<Result> SaveSettings([FromBody] LaserSettings settings)
         {
+            _settings.maxRight = settings.maxRight;
+            _settings.maxLeft = settings.maxLeft;
+            _settings.maxHeight = settings.maxHeight;
+            _settings.minHeight = settings.minHeight;
+            _settings.ComPort = settings.ComPort;
+            _settings.maxLaserPower = settings.maxLaserPower;
+
             _serialPortModel.SendCommand(new SerialCommand().SaveSettings(settings));
             return await _jsonHandler.Save(settings, StoragePath.settings);
         }

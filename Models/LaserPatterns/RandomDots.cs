@@ -23,9 +23,11 @@ namespace Models.LaserPatterns
         {
             var stopwatch = new Stopwatch();
             stopwatch.Start();
+            int iterations = 0;
 
-            for (int i = 0; i < 1000; i++)
+            while (stopwatch.ElapsedMilliseconds < options.DurationMilliseconds || iterations < options.Total * 100)
             {
+                iterations++;
                 if (stopwatch.ElapsedMilliseconds > options.DurationMilliseconds && options.DurationMilliseconds != 0 || _laserAnimationStatus.AnimationCanceled) break;
 
                 LaserColors colors = _laserPatternHelper.GetRandomLaserColors();

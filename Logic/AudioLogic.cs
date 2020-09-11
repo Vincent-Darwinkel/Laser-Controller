@@ -138,7 +138,7 @@ namespace Logic
 
             _totalTimesOff++;
 
-            if (_totalTimesOff <= 5) return false;
+            if (_totalTimesOff <= 3) return false;
             _laserAnimationStatus.AnimationCanceled = true;
             _laserAnimationStatus.AnimationSpeed = AnimationSpeed.Off;
             _totalTimesOff = 0;
@@ -153,7 +153,7 @@ namespace Logic
             AnimationSpeed currentSpeed = GetAnimationSpeedByFftData(averageBassVolume);
 
             _previousAnimationSpeeds.Add(currentSpeed);
-            if (_previousAnimationSpeeds.Count > 8) _previousAnimationSpeeds.RemoveRange(0, _previousAnimationSpeeds.Count - 3);
+            if (_previousAnimationSpeeds.Count > 10) _previousAnimationSpeeds.RemoveRange(0, _previousAnimationSpeeds.Count - 3);
 
             Console.WriteLine(averageBassVolume.Y);
             Console.WriteLine(currentSpeed);

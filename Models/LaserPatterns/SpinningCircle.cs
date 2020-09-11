@@ -37,9 +37,11 @@ namespace Models.LaserPatterns
                 colors.Add(_laserPatternHelper.GetRandomLaserColors());
 
             AnimationSpeed animationSpeed = options.AnimationSpeed;
+            double iterations = 0;
 
-            for (double i = 0; i < 6.5 * options.Total; i += (double)animationSpeed / 200)
+            while (stopwatch.ElapsedMilliseconds < options.DurationMilliseconds || iterations / 6.3 < options.Total)
             {
+                iterations += (double) animationSpeed / 200;
                 if (stopwatch.ElapsedMilliseconds > options.DurationMilliseconds && options.DurationMilliseconds != 0 || _laserAnimationStatus.AnimationCanceled) break;
                 if (options.AnimationSpeed == AnimationSpeed.NotSet) animationSpeed = _laserAnimationStatus.AnimationSpeed;
 
@@ -47,8 +49,8 @@ namespace Models.LaserPatterns
                 {
                     for (int j = 0; j < 3; j++)
                     {
-                        int x = Convert.ToInt32(Math.Cos(i + line) * Math.Abs(_settings.maxLeft));
-                        int y = Convert.ToInt32(Math.Sin(i + line) * Math.Abs(2000));
+                        int x = Convert.ToInt32(Math.Cos(iterations + line) * Math.Abs(_settings.maxLeft));
+                        int y = Convert.ToInt32(Math.Sin(iterations + line) * Math.Abs(2000));
 
                         _laser.SendTo(x, y);
                         System.Threading.Thread.SpinWait(20000);

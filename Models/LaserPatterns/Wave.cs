@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Enums;
 using Interfaces;
+
 namespace Models.LaserPatterns
 {
-    public class MovingDots : ILaserPattern
+    public class Wave : ILaserPattern
     {
         private readonly Laser _laser;
         private readonly LaserPatternHelper _laserPatternHelper;
         private readonly LaserSettings _settings;
         private readonly LaserAnimationStatus _laserAnimationStatus;
 
-        public MovingDots(Laser laser, LaserPatternHelper laserPatternHelper, LaserSettings settings, LaserAnimationStatus laserAnimationStatus)
+        public Wave(Laser laser, LaserPatternHelper laserPatternHelper, LaserSettings settings, LaserAnimationStatus laserAnimationStatus)
         {
             Process myProcess = Process.GetCurrentProcess();
             myProcess.PriorityClass = ProcessPriorityClass.High;
@@ -25,7 +26,8 @@ namespace Models.LaserPatterns
 
         public void Project(PatternOptions options)
         {
-            int totalLines = 4;
+            int totalLines = 6;
+
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
@@ -39,23 +41,24 @@ namespace Models.LaserPatterns
 
             while (stopwatch.ElapsedMilliseconds < options.DurationMilliseconds || iterations / 6.3 < options.Total)
             {
-                iterations += (double) animationSpeed / 800;
-
+                iterations += (double)animationSpeed / 200;
                 if (stopwatch.ElapsedMilliseconds > options.DurationMilliseconds && options.DurationMilliseconds != 0 || _laserAnimationStatus.AnimationCanceled) break;
                 if (options.AnimationSpeed == AnimationSpeed.NotSet) animationSpeed = _laserAnimationStatus.AnimationSpeed;
+
                 for (int line = 0; line < totalLines; line++)
                 {
-                    for (int l = 0; l < 3; l++)
+                    for (int j = 0; j < 3; j++)
                     {
                         int x = Convert.ToInt32(Math.Cos(iterations + line) * Math.Abs(_settings.maxLeft));
-                        _laser.SendTo(x, _settings.maxHeight);
-                        System.Threading.Thread.SpinWait(10000);
+                        int y = Convert.ToInt32(Math.Sin(iterations) * Math.Abs(2000));
+
+                        _laser.SendTo(x, y);
+                        System.Threading.Thread.SpinWait(8000);
 
                         _laser.On(colors[line]);
+                        System.Threading.Thread.SpinWait(1000);
+                        _laser.Off();
                     }
-
-                    _laser.Off();
-                    System.Threading.Thread.SpinWait(1000);
                 }
             }
         }

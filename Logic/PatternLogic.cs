@@ -62,10 +62,11 @@ namespace Logic
         /// <param name="duration"></param>
         public void PlayPattern(PatternOptions options)
         {
+            ILaserPattern pattern = _patterns.Find(p => p.GetType().Name == options.PatternName);
+
             if (!AnimationCompleted()) return;
             _playPatternTask = new Task(() =>
             {
-                ILaserPattern pattern = _patterns.Find(p => p.GetType().Name == options.PatternName);
                 if (pattern == null) return;
 
                 pattern.Project(options);

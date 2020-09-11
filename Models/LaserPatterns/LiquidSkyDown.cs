@@ -26,9 +26,12 @@ namespace Models.LaserPatterns
             stopwatch.Start();
 
             AnimationSpeed animationSpeed = options.AnimationSpeed;
+            int iterations = 0;
 
-            for (int k = 0; k < options.Total; k++)
+            while (stopwatch.ElapsedMilliseconds < options.DurationMilliseconds || iterations < options.Total)
             {
+                iterations++;
+
                 for (int i = _settings.maxHeight; i > _settings.minHeight; i -= (int)animationSpeed)
                 {
                     if (stopwatch.ElapsedMilliseconds > options.DurationMilliseconds && options.DurationMilliseconds != 0 || _laserAnimationStatus.AnimationCanceled) break;

@@ -27,9 +27,11 @@ namespace Models.LaserPatterns
             stopwatch.Start();
 
             AnimationSpeed animationSpeed = options.AnimationSpeed;
+            double iterations = 0;
 
-            for (double i = 0; i < 6.5 * options.Total; i += (double)animationSpeed / 800)
+            while (stopwatch.ElapsedMilliseconds < options.DurationMilliseconds || iterations / 6.3 < options.Total)
             {
+                iterations += (double) animationSpeed / 800;
                 if (options.AnimationSpeed == AnimationSpeed.NotSet) animationSpeed = _laserAnimationStatus.AnimationSpeed;
 
                 for (int line = 0; line < 2; line++)
@@ -38,8 +40,8 @@ namespace Models.LaserPatterns
 
                     for (int j = 0; j < 3; j++)
                     {
-                        int x = Convert.ToInt32(Math.Cos(i + line * 3) * Math.Abs(_settings.maxLeft));
-                        int y = Convert.ToInt32(Math.Sin(i + line * 3) * Math.Abs(2000));
+                        int x = Convert.ToInt32(Math.Cos(iterations + line * 3) * Math.Abs(_settings.maxLeft));
+                        int y = Convert.ToInt32(Math.Sin(iterations + line * 3) * Math.Abs(2000));
 
                         _laser.SendTo(x, y);
                         System.Threading.Thread.SpinWait(20000);
