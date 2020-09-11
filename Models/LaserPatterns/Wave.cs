@@ -26,40 +26,34 @@ namespace Models.LaserPatterns
 
         public void Project(PatternOptions options)
         {
-            int totalLines = 6;
-
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var colors = new List<LaserColors>();
-
-            for (int i = 0; i < totalLines; i++)
-                colors.Add(_laserPatternHelper.GetRandomLaserColors());
+            var color = _laserPatternHelper.GetRandomLaserColors();
 
             AnimationSpeed animationSpeed = options.AnimationSpeed;
             double iterations = 0;
 
             while (stopwatch.ElapsedMilliseconds < options.DurationMilliseconds || iterations / 6.3 < options.Total)
             {
-                iterations += (double)animationSpeed / 200;
                 if (stopwatch.ElapsedMilliseconds > options.DurationMilliseconds && options.DurationMilliseconds != 0 || _laserAnimationStatus.AnimationCanceled) break;
                 if (options.AnimationSpeed == AnimationSpeed.NotSet) animationSpeed = _laserAnimationStatus.AnimationSpeed;
 
-                for (int line = 0; line < totalLines; line++)
+                for (int i = _settings.maxLeft; i < _settings.maxRight; i += 15)
                 {
-                    for (int j = 0; j < 3; j++)
-                    {
-                        int x = Convert.ToInt32(Math.Cos(iterations + line) * Math.Abs(_settings.maxLeft));
-                        int y = Convert.ToInt32(Math.Sin(iterations) * Math.Abs(2000));
+                    iterations += 0.025;
 
-                        _laser.SendTo(x, y);
-                        System.Threading.Thread.SpinWait(8000);
+                    for (double j = 0; j < (double)animationSpeed; j++)
+                        iterations += 0.0005;
 
-                        _laser.On(colors[line]);
-                        System.Threading.Thread.SpinWait(1000);
-                        _laser.Off();
-                    }
+                    int y = Convert.ToInt32(Math.Sin(iterations) * Math.Abs(_settings.maxHeight));
+                    _laser.SendTo(i, y);
+
+                    if (i == _settings.maxLeft) System.Threading.Thread.SpinWait(22000);
+                    _laser.On(color);
                 }
+
+                _laser.Off();
             }
         }
     }

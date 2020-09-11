@@ -8,6 +8,7 @@
     <SpaRoot>ClientApp\</SpaRoot>
     <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
     <RootNamespace>Laser_Controller</RootNamespace>
+    <UserSecretsId>0d2fac07-58d9-44f5-bf4b-8c80cb484337</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
