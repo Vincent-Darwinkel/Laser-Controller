@@ -35,13 +35,6 @@ namespace Models
 
         private void TimerTick(object source, ElapsedEventArgs e)
         {
-            if (_stopwatch.ElapsedMilliseconds > 8000 && _serialPort.IsOpen)
-            {
-                _stopwatch.Restart();
-                _serialPort.Close();
-                _serialPort.Open();
-            }
-
             if (_stopwatch.ElapsedMilliseconds < _serialPortAutoCloseTime) return;
             
             _stopwatch.Restart();

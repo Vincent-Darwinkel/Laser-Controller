@@ -56,7 +56,7 @@ namespace Models.LaserPatterns
             bool xToLeft = false;
             bool yUp = false;
 
-            while (stopwatch.ElapsedMilliseconds < options.DurationMilliseconds || iterations < options.Total)
+            while (stopwatch.ElapsedMilliseconds < options.DurationMilliseconds || iterations < options.Total * 100)
             {
                 iterations++;
 
