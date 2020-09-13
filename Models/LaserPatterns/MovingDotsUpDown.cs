@@ -53,7 +53,7 @@ namespace Models.LaserPatterns
 
                     _laser.On(colors[line]);
 
-                    System.Threading.Thread.SpinWait(2000);
+                    System.Threading.Thread.SpinWait(6000);
                     _laser.Off();
                 }
             }

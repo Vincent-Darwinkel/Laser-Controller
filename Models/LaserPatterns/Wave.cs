@@ -34,7 +34,7 @@ namespace Models.LaserPatterns
             AnimationSpeed animationSpeed = options.AnimationSpeed;
             double iterations = 0;
 
-            while (stopwatch.ElapsedMilliseconds < options.DurationMilliseconds || iterations / 6.3 < options.Total)
+            while (stopwatch.ElapsedMilliseconds < options.DurationMilliseconds || iterations < options.Total)
             {
                 if (stopwatch.ElapsedMilliseconds > options.DurationMilliseconds && options.DurationMilliseconds != 0 || _laserAnimationStatus.AnimationCanceled) break;
                 if (options.AnimationSpeed == AnimationSpeed.NotSet) animationSpeed = _laserAnimationStatus.AnimationSpeed;
