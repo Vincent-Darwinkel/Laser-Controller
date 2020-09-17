@@ -40,7 +40,10 @@ namespace Models
             _stopwatch.Restart();
 
             if (!_serialPort.IsOpen) return;
+            _serialPort.WriteLine(new SerialCommand().LasersOff());
             _serialPort.Close();
+            _timer.Enabled = false;
+            _timer.Stop();
         }
 
         public IEnumerable<string> GetPortNames()
@@ -66,7 +69,7 @@ namespace Models
                 return json.Contains("error") ? default : JsonConvert.DeserializeObject<T>(json);
             }
 
-            catch (Exception e)
+            catch (Exception)
             {
                 // catch locked exception
             }
@@ -77,7 +80,11 @@ namespace Models
         public void SendCommand(string command)
         {
             if (!_serialPort.IsOpen)
+            {
+                _timer.Enabled = true;
+                _timer.Start();
                 _serialPort.Open();
+            }
 
             _stopwatch.Restart();
             _serialPort.WriteLine(command);

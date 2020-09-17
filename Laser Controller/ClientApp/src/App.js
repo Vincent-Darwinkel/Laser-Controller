@@ -7,6 +7,7 @@ import Audio from './components/audio/audio';
 import Shows from './components/shows/shows';
 import Patterns from './components/patterns/patterns';
 import Settings from './components/settings/settings';
+import GameDashboard from './components/games/game-dashboard';
 
 import './app.css'
 
@@ -22,6 +23,7 @@ export default class App extends Component {
         <Route exact path='/shows' component={Shows} />
         <Route exact path='/patterns' component={Patterns} />
         <Route exact path='/settings' component={Settings} />
+        <Route exact path='/games' component={GameDashboard} />
       </div>
     );
   }

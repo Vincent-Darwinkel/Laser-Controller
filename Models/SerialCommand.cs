@@ -1,5 +1,4 @@
 ﻿using Enums;
-using Interfaces;
 
 namespace Models
 {

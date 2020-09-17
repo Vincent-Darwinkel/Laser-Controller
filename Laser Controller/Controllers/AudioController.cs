@@ -33,7 +33,7 @@ namespace Laser_Controller.Controllers
         [HttpPost("calibrate/{calibrationValue}")]
         public async Task CalibrateAudioVolume(float calibrationValue)
         {
-            _audioLogic._audioCalibrationValue = calibrationValue;
+            _audioLogic.AudioCalibrationValue = calibrationValue;
             var audioSettings = new AudioSettings
             {
                 AudioCalibrationValue = calibrationValue

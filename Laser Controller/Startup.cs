@@ -45,6 +45,7 @@ namespace Laser_Controller
             services.AddTransient<LaserPatternHelper>();
             services.AddSingleton<Laser>();
             services.AddSingleton<LaserAnimationStatus>();
+            services.AddSingleton<GameLogic>();
 
             return services;
         }

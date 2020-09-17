@@ -1,7 +1,9 @@
-﻿namespace Interfaces
+﻿using Models;
+
+namespace Interfaces
 {
     public interface ILaserPattern
     {
-        void Project();
+        public void Project(PatternOptions options);
     }
 }

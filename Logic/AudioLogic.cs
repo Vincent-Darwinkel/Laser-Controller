@@ -25,7 +25,7 @@ namespace Logic
         private readonly LaserAnimationStatus _laserAnimationStatus;
 
         private readonly List<ILaserPattern> _patterns = new List<ILaserPattern>();
-        private List<ILaserPattern> _previousExecutedPatterns = new List<ILaserPattern>();
+        private readonly List<ILaserPattern> _previousExecutedPatterns = new List<ILaserPattern>();
 
         private readonly List<AnimationSpeed> _previousAnimationSpeeds = new List<AnimationSpeed>();
         private AnimationSpeed _averageAnimationSpeed;
@@ -33,14 +33,14 @@ namespace Logic
         private int _totalTimesOff;
         private Task _animationTask;
 
-        public float _audioCalibrationValue { get; set; } = 0;
+        public float AudioCalibrationValue { get; set; }
 
         public AudioLogic(IServiceProvider serviceProvider, LaserAnimationStatus laserAnimationStatus, AudioSettings settings)
         {
             _serviceProvider = serviceProvider;
             _laserAnimationStatus = laserAnimationStatus;
 
-            _audioCalibrationValue = settings.AudioCalibrationValue;
+            AudioCalibrationValue = settings.AudioCalibrationValue;
 
             SetTimer();
             sampleAggregator.FftCalculated += FftCalculated;
@@ -57,7 +57,7 @@ namespace Logic
                     _patterns.Add((ILaserPattern)ActivatorUtilities.CreateInstance(_serviceProvider, pattern));
             }
 
-            catch (Exception e) { /* catch windows forms not found exception */ }
+            catch (Exception) { /* catch windows forms not found exception */ }
         }
 
         private void OnDataAvailable(object sender, WaveInEventArgs e)
@@ -120,7 +120,7 @@ namespace Logic
             if (average.Y != average.Y || average.X != average.X)
                 return AnimationSpeed.Off; // check if value is a number if not no music is played
 
-            average.Y += _audioCalibrationValue;
+            average.Y += AudioCalibrationValue;
 
             if (average.Y > 0.010 && average.Y < 0.014) return AnimationSpeed.Slow;
             if (average.Y > 0.014 && average.Y < 0.018) return AnimationSpeed.Medium;

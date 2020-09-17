@@ -27,7 +27,7 @@ namespace Logic
                     _patterns.Add((ILaserPattern)ActivatorUtilities.CreateInstance(_serviceProvider, pattern));
             }
 
-            catch (Exception e)
+            catch (Exception)
             {
                 
             }
@@ -45,10 +45,8 @@ namespace Logic
             _playPatternTask = new Task(() =>
             {
                 foreach (var pattern in _patterns)
-                {
-                    int total = new Random(Guid.NewGuid().GetHashCode()).Next(1, 5);
                     pattern.Project(options);
-                }
+
             }, TaskCreationOptions.RunContinuationsAsynchronously);
 
             _playPatternTask.Start();

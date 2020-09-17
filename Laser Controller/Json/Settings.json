@@ -1,1 +1,1 @@
-{"maxLeft":-1608,"maxRight":2000,"maxHeight":2000,"minHeight":0,"maxLaserPower":[120,120,120],"ComPort":"COM4"}
+{"maxLeft":-1600,"maxRight":1600,"maxHeight":2000,"minHeight":200,"maxLaserPower":[90,90,90],"ComPort":"COM4"}
