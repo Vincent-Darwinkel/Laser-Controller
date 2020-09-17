@@ -10,6 +10,7 @@ namespace Models.GameModels.Snake
         internal LaserLine RightWallPosition { get; set; }
         internal LaserLine TopWallPosition { get; set; }
 
+        private const int DotSize = 75;
         private readonly LaserSettings _settings;
         private readonly LaserPatternHelper _laserPatternHelper;
 
@@ -24,22 +25,22 @@ namespace Models.GameModels.Snake
         internal void PlaceDotAtRandomPosition()
         {
             var random = new Random(Guid.NewGuid().GetHashCode());
-            int dotXCenter = random.Next(_settings.maxLeft + 25, _settings.maxRight - 25);
-            int dotYCenter = random.Next(_settings.minHeight + 25, _settings.maxHeight - 25);
+            int dotXCenter = random.Next(_settings.maxLeft + DotSize, _settings.maxRight - DotSize);
+            int dotYCenter = random.Next(_settings.minHeight + DotSize, _settings.maxHeight - DotSize);
 
             BottomWallPosition = new LaserLine
             {
                 FirstPosition = new LaserPositionAndColors
                 {
-                    X = dotXCenter - 25,
-                    Y = dotYCenter - 25,
+                    X = dotXCenter - DotSize,
+                    Y = dotYCenter - DotSize,
                     LaserColors = _laserPatternHelper.GetRandomLaserColors()
                 },
 
                 SecondPosition = new LaserPositionAndColors
                 {
-                    X = dotXCenter + 25,
-                    Y = dotYCenter - 25,
+                    X = dotXCenter + DotSize,
+                    Y = dotYCenter - DotSize,
                     LaserColors = _laserPatternHelper.GetRandomLaserColors()
                 }
             };
@@ -48,15 +49,15 @@ namespace Models.GameModels.Snake
             {
                 FirstPosition = new LaserPositionAndColors
                 {
-                    X = dotXCenter + 25,
-                    Y = dotYCenter - 25,
+                    X = dotXCenter + DotSize,
+                    Y = dotYCenter - DotSize,
                     LaserColors = _laserPatternHelper.GetRandomLaserColors()
                 },
 
                 SecondPosition = new LaserPositionAndColors
                 {
-                    X = dotXCenter + 25,
-                    Y = dotYCenter + 25,
+                    X = dotXCenter + DotSize,
+                    Y = dotYCenter + DotSize,
                     LaserColors = _laserPatternHelper.GetRandomLaserColors()
                 }
             };
@@ -65,15 +66,15 @@ namespace Models.GameModels.Snake
             {
                 FirstPosition = new LaserPositionAndColors
                 {
-                    X = dotXCenter + 25,
-                    Y = dotYCenter + 25,
+                    X = dotXCenter + DotSize,
+                    Y = dotYCenter + DotSize,
                     LaserColors = _laserPatternHelper.GetRandomLaserColors()
                 },
 
                 SecondPosition = new LaserPositionAndColors
                 {
-                    X = dotXCenter - 25,
-                    Y = dotYCenter + 25,
+                    X = dotXCenter - DotSize,
+                    Y = dotYCenter + DotSize,
                     LaserColors = _laserPatternHelper.GetRandomLaserColors()
                 }
             };
@@ -82,15 +83,15 @@ namespace Models.GameModels.Snake
             {
                 FirstPosition = new LaserPositionAndColors
                 {
-                    X = dotXCenter - 25,
-                    Y = dotYCenter + 25,
+                    X = dotXCenter - DotSize,
+                    Y = dotYCenter + DotSize,
                     LaserColors = _laserPatternHelper.GetRandomLaserColors()
                 },
 
                 SecondPosition = new LaserPositionAndColors
                 {
-                    X = dotXCenter - 25,
-                    Y = dotYCenter - 25,
+                    X = dotXCenter - DotSize,
+                    Y = dotYCenter - DotSize,
                     LaserColors = _laserPatternHelper.GetRandomLaserColors()
                 }
             };

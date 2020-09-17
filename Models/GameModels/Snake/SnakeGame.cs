@@ -19,7 +19,9 @@ namespace Models.GameModels.Snake
         private bool _gameStarted;
         private const int SnakeIncreaseValue = 25;
         private PlayerDirection _playerDirection = PlayerDirection.Right;
-
+        private int _timerInterval = 50;
+        private int _previousGameSpeedIncrease;
+        private int _iterations;
         private Timer _timer;
 
         public SnakeGame(Laser laser, LaserSettings settings, LaserPatternHelper laserPatternHelper)
@@ -43,6 +45,14 @@ namespace Models.GameModels.Snake
         private void TimerTick(object source, ElapsedEventArgs e)
         {
             MoveSnake();
+            _timer.Interval = _timerInterval;
+            _iterations++;
+
+            if (_iterations - _previousGameSpeedIncrease > 50 && _timerInterval > 15)
+            {
+                _timerInterval--;
+                _previousGameSpeedIncrease = _iterations;
+            }
 
             if (SnakeTouchesWall() || SnakeTouchesHimself())
             {
@@ -142,7 +152,7 @@ namespace Models.GameModels.Snake
                 LaserPositionAndColors snakePositionAndColors = _snake.SnakePositions[i];
 
                 _laser.SendTo(snakePositionAndColors.X, snakePositionAndColors.Y);
-                System.Threading.Thread.SpinWait(i == 0 ? 25000 : 100);
+                if (i == 0) System.Threading.Thread.SpinWait(25000);
                 _laser.On(snakePositionAndColors.LaserColors);
             }
 
@@ -206,17 +216,18 @@ namespace Models.GameModels.Snake
         {
             int x = _snake.SnakePositions.Last().X;
             int y = _snake.SnakePositions.Last().Y;
+            var newSnakePositions = new List<LaserPositionAndColors>();
 
-            var newSnakePositions = new List<LaserPositionAndColors>
+            for (int i = 0; i < 5; i++)
             {
-                new LaserPositionAndColors
+                newSnakePositions.Add(new LaserPositionAndColors
                 {
                     X = x,
                     Y = y,
                     LaserColors = _laserPatternHelper.GetRandomLaserColors()
-                }
-            };
-
+                });
+            }
+            
             newSnakePositions.AddRange(_snake.SnakePositions);
             _snake.SnakePositions = newSnakePositions;
         }
@@ -247,7 +258,10 @@ namespace Models.GameModels.Snake
 
         public void Stop()
         {
+            Console.WriteLine(_snake.DotsEaten);
             _gameStarted = false;
+            _timerInterval = 50;
+            _timer.Interval = _timerInterval;
             _snake.ResetSnake();
             _timer.Enabled = false;
             _timer.Stop();
