@@ -8,7 +8,7 @@ using Models.LaserPatterns;
 
 namespace Models.GameModels.Snake
 {
-    public class SnakeGame : IGame
+    public class LaserSnake : IGame
     {
         private readonly Laser _laser;
         private readonly Snake _snake;
@@ -24,7 +24,7 @@ namespace Models.GameModels.Snake
         private int _iterations;
         private Timer _timer;
 
-        public SnakeGame(Laser laser, LaserSettings settings, LaserPatternHelper laserPatternHelper)
+        public LaserSnake(Laser laser, LaserSettings settings, LaserPatternHelper laserPatternHelper)
         {
             _snake = new Snake(settings, laserPatternHelper, SnakeIncreaseValue);
             _settings = settings;
