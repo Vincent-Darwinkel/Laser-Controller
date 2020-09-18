@@ -208,6 +208,7 @@ namespace Logic
 
         public void StartAudioAlgorithm()
         {
+            _laserAnimationStatus.AnimationCanceled = false;
             waveIn.StartRecording();
             _timer.Enabled = true;
             _timer.Start();
@@ -216,6 +217,8 @@ namespace Logic
         public void StopAudioAlgorithm()
         {
             waveIn.StopRecording();
+            _laserAnimationStatus.AnimationSpeed = AnimationSpeed.Off;
+            _laserAnimationStatus.AnimationCanceled = true;
             _timer.Enabled = false;
             _timer.Stop();
         }

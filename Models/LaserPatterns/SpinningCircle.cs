@@ -44,13 +44,15 @@ namespace Models.LaserPatterns
                 iterations += (double) animationSpeed / 200;
                 if (stopwatch.ElapsedMilliseconds > options.DurationMilliseconds && options.DurationMilliseconds != 0 || _laserAnimationStatus.AnimationCanceled) break;
                 if (options.AnimationSpeed == AnimationSpeed.NotSet) animationSpeed = _laserAnimationStatus.AnimationSpeed;
-
+                
                 for (int line = 0; line < totalLines; line++)
                 {
                     for (int j = 0; j < 3; j++)
                     {
-                        int x = Convert.ToInt32(Math.Cos(iterations + line) * Math.Abs(_settings.maxLeft));
-                        int y = Convert.ToInt32(Math.Sin(iterations + line) * Math.Abs(2000));
+                        double scale = Math.Cos(iterations / 2) / 3;
+
+                        int x = Convert.ToInt32(Math.Cos(iterations + line) * Math.Abs(_settings.maxLeft) / Math.Sin(iterations / 20) * scale);
+                        int y = Convert.ToInt32(Math.Sin(iterations + line) * Math.Abs(2000) / Math.Sin(iterations / 20) * scale);
 
                         _laser.SendTo(x, y);
                         System.Threading.Thread.SpinWait(20000);
