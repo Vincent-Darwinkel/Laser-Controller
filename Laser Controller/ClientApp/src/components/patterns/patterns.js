@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import Menu from '../shared/menu/menu';
-import { Button, Form } from 'react-bootstrap';
+import { AllPatterns, StartPattern } from 'services/patterns/patterns';
+import { Button, Form, Dropdown } from 'react-bootstrap';
 import './patterns.css';
-import DotDrawer from './elements/dotDrawer';
+import { toast } from 'react-toastify';
 
 class Patterns extends Component {
 
@@ -10,55 +11,55 @@ class Patterns extends Component {
         super(props);
 
         this.state = {
-            dots: [],
-            dotDrawers: []
+            patterns: null,
+            selectedPattern: null
         };
     }
 
-    componentDidMount() {
-        const canvas = document.getElementById('patterns-canvas');
-        canvas.width = window.innerWidth - 200;
-        canvas.heigh = window.innerHeight - 200;
+    async componentDidMount() {
+        const patterns = await AllPatterns();
+        this.generateDropDownItems(patterns);
     }
 
-    addDotDrawer = () => {
-        let dotDrawers = this.state.dotDrawers;
-
-        const newDotDrawer = <DotDrawer id={dotDrawers.length}/>;
-        dotDrawers.push(newDotDrawer);
-
-        this.setState({ dotDrawers: dotDrawers });
+    changePattern = (pattern) => {
+        this.setState({ selectedPattern: pattern })
     }
 
-    drawLine = (index) => {
-        const canvas = document.getElementById('patterns-canvas');
-        var ctx = canvas.getContext("2d");
-
-        const x = Math.round(document.getElementById('patterns-x').value / 5);
-        const y = Math.round(document.getElementById('patterns-y').value / 5);
-        const r = document.getElementById('patterns-red').value;
-        const g = document.getElementById('patterns-green').value;
-        const b = document.getElementById('patterns-blue').value;
-
-        ctx.beginPath();
-
-        if (r === 0 || g === 0 || b === 0 || this.state.dots === [])
-            ctx.arc(x, y, 2, 0, 2 * Math.PI);
-
-        else {
-            ctx.moveTo(0, 0);
-            ctx.lineTo(300, 150);
+    validateForm = () => {
+        if (this.state.selectedPattern === null) {
+            return false;
         }
 
-        ctx.stroke();
-
+        return true;
     }
 
-    submitForm = (e) => {
+    submitForm = async (e) => {
         e.preventDefault();
 
-        this.drawLine(e);
-        console.log(e);
+        if (!this.validateForm()) {
+            toast.error('No pattern selected');
+            return;
+        }
+
+        const patternOptions = {
+            patternName: this.state.selectedPattern,
+            animationSpeed: Number(document.getElementById('txtbox-animation-speed').value),
+            durationMilliseconds: Number(document.getElementById('txtbox-duration').value),
+            total: Number(document.getElementById('txtbox-total').value)
+        }
+
+        await StartPattern(patternOptions);
+    }
+
+    generateDropDownItems = (patterns) => {
+        let patternItems = [];
+
+        for (let index = 0; index < patterns.length; index++) {
+            const element = patterns[index];
+            patternItems.push(<Dropdown.Item eventKey={element}>{element}</Dropdown.Item>);
+        }
+
+        this.setState({ patterns: patternItems });
     }
 
     render() {
@@ -66,28 +67,39 @@ class Patterns extends Component {
             <div>
                 <Menu />
                 <div id="main">
-
-                    <canvas id="patterns-canvas" height="500">
-                        Your browser does not support the HTML5 canvas tag.
-                    </canvas>
-
-                    <Form.Group>
-                        <Form.Label>Name</Form.Label>
-                        <Form.Control type="text" required minLength={4} placeholder="My pattern" />
-                    </Form.Group>
-
                     <Form onSubmit={this.submitForm}>
-                        <div id="patterns-dotdrawers">
-                            {this.state.dotDrawers}
+                        <div>
+                            <h4>Patterns</h4>
+
+                            <Form.Group>
+                                <Dropdown onSelect={(e) => this.changePattern(e)}>
+                                    <Dropdown.Toggle variant="primary">
+                                        {this.state.selectedPattern ?? "No patterns selected"}
+                                    </Dropdown.Toggle>
+
+                                    <Dropdown.Menu>
+                                        {this.state.patterns}
+                                    </Dropdown.Menu>
+                                </Dropdown>
+                            </Form.Group>
+
+                            <Form.Group>
+                                <Form.Label>AnimationSpeed</Form.Label>
+                                <Form.Control id="txtbox-animation-speed" min={1} max={30} type="number" defaultValue="7" />
+                            </Form.Group>
+
+                            <Form.Group>
+                                <Form.Label>Duration milliseconds</Form.Label>
+                                <Form.Control id="txtbox-duration" type="number" defaultValue="2000" />
+                            </Form.Group>
+
+                            <Form.Group>
+                                <Form.Label>Total</Form.Label>
+                                <Form.Control id="txtbox-total" type="number" defaultValue="7" />
+                            </Form.Group>
                         </div>
 
-                        <Button variant="primary" type="button" onClick={this.addDotDrawer}>
-                            Add new dot
-                        </Button>
-
-                        <Button variant="primary" type="submit">
-                            Save
-                        </Button>
+                        <Button variant="primary" type="submit">Start</Button>
                     </Form>
                 </div>
             </div>

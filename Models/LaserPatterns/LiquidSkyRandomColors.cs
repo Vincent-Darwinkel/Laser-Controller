@@ -54,14 +54,24 @@ namespace Models.LaserPatterns
 
             while (stopwatch.ElapsedMilliseconds < options.DurationMilliseconds || iterations < options.Total)
             {
-                iterations++;
-
                 if (y > _settings.minHeight) y -= (int) animationSpeed / 5 + 2;
-                else y = _settings.maxHeight;
+                else
+                {
+                    iterations++;
+                    y = _settings.maxHeight;
+                }
 
                 if (options.AnimationSpeed == AnimationSpeed.NotSet) animationSpeed = _laserAnimationStatus.AnimationSpeed;
 
-                if (iterations - previousColorChange > 600 / (int) animationSpeed)
+                int iterationThreshold = 0;
+                try
+                {
+                    iterationThreshold = 600 / (int)animationSpeed;
+                }
+
+                catch (Exception e) { }
+
+                if (iterations - previousColorChange > iterationThreshold)
                 {
                     previousColorChange = iterations;
                     colors = GetRandomColors();

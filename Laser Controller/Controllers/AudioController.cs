@@ -41,5 +41,11 @@ namespace Laser_Controller.Controllers
 
             await _jsonHandler.Save(audioSettings, StoragePath.audio);
         }
+
+        [HttpGet("calibration-value")]
+        public async Task<float> GetCalibrationValue()
+        {
+            return _jsonHandler.Get<AudioSettings>(StoragePath.audio).AudioCalibrationValue;
+        }
     }
 }

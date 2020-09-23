@@ -1,7 +1,7 @@
 #menu {
     height: 100%;
     width: 200px;
-    background-color: black;
+    background: linear-gradient(180deg, rgba(40,44,52,1) 0%, rgba(40,44,150,1) 450%);
     position: absolute;
 
     color: white;

@@ -42,7 +42,7 @@ namespace Models.LaserPatterns
                 for (int i = _settings.maxLeft; i < _settings.maxRight; i += 15)
                 {
                     iterations++;
-                    sin += 0.026 - (double)animationSpeed / 30000;
+                    sin += 0.026;
                     
                     int y = Convert.ToInt32(Math.Sin(sin) * Math.Abs(_settings.maxHeight));
                     _laser.SendTo(i, y);

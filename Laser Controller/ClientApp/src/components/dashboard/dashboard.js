@@ -12,6 +12,7 @@ class Dashboard extends Component {
                 <div id="main">
                     <div className="row dashboard-card-row">
                         <DashboardCard title={"Audio"} description="Let an audio algorithm create patterns based on an audio signal" href="/audio" />
+                        <DashboardCard title={"Games"} description="Play a game with the laser" href="/games" />
                     </div>
                 </div>
             </div>

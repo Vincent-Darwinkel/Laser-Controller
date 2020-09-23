@@ -152,7 +152,7 @@ namespace Models.GameModels.Snake
                 LaserPositionAndColors snakePositionAndColors = _snake.SnakePositions[i];
 
                 _laser.SendTo(snakePositionAndColors.X, snakePositionAndColors.Y);
-                if (i == 0) System.Threading.Thread.SpinWait(25000);
+                if (i == 0) System.Threading.Thread.SpinWait(30000);
                 _laser.On(snakePositionAndColors.LaserColors);
             }
 
@@ -186,22 +186,22 @@ namespace Models.GameModels.Snake
         private void DrawWall()
         {
             _laser.SendTo(_settings.maxLeft, _settings.minHeight);
-            System.Threading.Thread.SpinWait(25000);
+            System.Threading.Thread.SpinWait(30000);
             _laser.On(_laserPatternHelper.GetRandomLaserColors());
 
             _laser.SendTo(_settings.maxRight, _settings.minHeight);
-            System.Threading.Thread.SpinWait(25000);
+            System.Threading.Thread.SpinWait(30000);
 
             _laser.SendTo(_settings.maxRight, _settings.maxHeight);
-            System.Threading.Thread.SpinWait(25000);
+            System.Threading.Thread.SpinWait(30000);
             _laser.On(_laserPatternHelper.GetRandomLaserColors());
 
             _laser.SendTo(_settings.maxLeft, _settings.maxHeight);
-            System.Threading.Thread.SpinWait(25000);
+            System.Threading.Thread.SpinWait(30000);
             _laser.On(_laserPatternHelper.GetRandomLaserColors());
 
             _laser.SendTo(_settings.maxLeft, _settings.minHeight);
-            System.Threading.Thread.SpinWait(25000);
+            System.Threading.Thread.SpinWait(30000);
             _laser.On(_laserPatternHelper.GetRandomLaserColors());
 
             _laser.Off();

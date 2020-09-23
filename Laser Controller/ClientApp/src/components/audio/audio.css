@@ -4,8 +4,14 @@
     text-align: center;
     width: 30%;
     padding: 10px;
+    background: linear-gradient(180deg, rgb(51, 57, 68) 0%, rgba(40,44,150,1) 450%);
+    color: white;
 }
 
 #audio-control button {
     margin: 2px;
+}
+
+#audio-calibration {
+    margin-top: 10px;
 }

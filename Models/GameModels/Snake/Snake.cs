@@ -11,7 +11,7 @@ namespace Models.GameModels.Snake
 
         private readonly LaserSettings _settings;
         private readonly LaserPatternHelper _laserPatternHelper;
-        private int _snakeIncreaseValue = 0;
+        private int _snakeIncreaseValue;
 
         public Snake(LaserSettings settings, LaserPatternHelper laserPatternHelper, int snakeIncreaseValue)
         {
